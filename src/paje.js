@@ -101,8 +101,45 @@ function drawPaje(f,t){
  const image=pajeAssets[atlas],scale=f.c.size/62;
  if(!image.naturalWidth)return;
  if(atlas==='powers'&&frame>=9&&frame<=14){
+  // A coluna sólida preenche a abertura da aura em todas as poses.
+  drawPajeFire(6,0,0,scale);
   drawPajeFire(Math.floor(f.powerMove.elapsed*15)%4,0,0,scale*1.16);
  }
  ctx.drawImage(image,frame%4*96,Math.floor(frame/4)*84,96,84,
   -48*scale,-78*scale,96*scale,84*scale);
+ drawPajeStrikeFlames(f,atlas,frame,scale);
+
+}
+
+// As posições usam as mesmas coordenadas locais e espelhamento do sprite.
+function drawPajeStrikeFlames(f,atlas,frame,scale){
+ if(atlas!=='powers'||!f.powerMove)return;
+ const clock=f.powerMove.elapsed;
+ if(frame===1){
+  for(let i=0;i<4;i++)drawPajeFlame(-18-i*9,-3,clock+i*.08,scale,1-i*.17);
+ }else if(frame===2){
+  drawPajeFlame(34,-35,clock,scale,.8);
+ }else if(frame===5){
+  drawPajeFlame(-12,-39,clock,scale,.65);
+ }else if(frame===6){
+  drawPajeFlame(36,-39,clock,scale,1.25);
+ }
+}
+function drawPajeFlame(x,y,clock,scale,strength){
+ const tick=Math.floor(clock*18);
+ ctx.save();
+ ctx.translate(Math.round(x*scale),Math.round(y*scale));
+ ctx.scale(scale*strength,scale*strength);
+ const colors=['#d63313','#ff7518','#ffbd32','#fff09a'];
+ for(let layer=0;layer<4;layer++){
+  ctx.fillStyle=colors[layer];
+  const width=12-layer*2;
+  ctx.fillRect(-width/2,-5,width,10-layer);
+  for(let tongue=0;tongue<3;tongue++){
+   const rise=6+(tick+tongue*3)%5-layer;
+   ctx.fillRect(-width/2+tongue*width/3,-5-rise,
+    Math.max(2,width/3),rise);
+  }
+ }
+ ctx.restore();
 }
