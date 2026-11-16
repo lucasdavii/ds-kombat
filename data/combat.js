@@ -7,7 +7,6 @@ const COMBAT={fps:60,buffer:6,gravity:1920,slamGravity:1560,jumpVelocity:-830,ju
 // Medidas no quadro de contato dos sprites: alcance a partir do pivô,
 // altura inferior e superior do braço, em unidades da arena.
 const PUNCH_CONTACT={
- kingbum:{stand:[107,153,198],low:[107,103,140],air:[107,153,198]},
  chapinha:{stand:[108,94,137],low:[111,58,95],air:[116,88,130]},
  pitufo:{stand:[113,110,146],low:[131,72,109],air:[130,99,139]},
  gaga:{stand:[112,130,169],low:[125,103,147],air:[125,114,155]},

@@ -183,14 +183,18 @@ function boxesOverlap(a,b){
 function strikeBox(f){
  const move=f.basicMove,size=f.c.size;
  let reach=move.range,top,bottom;
- if(!move.launch&&f.attackKind==='punch'){
+ if(f.key==='kingbum'){
+  const [measuredReach,low,high]=kingStrikeProfile(f);
+  reach=measuredReach;
+  top=f.y-high;
+  bottom=f.y-low;
+ }else if(!move.launch&&f.attackKind==='punch'){
   const [measuredReach,low,high]=PUNCH_CONTACT[f.key][f.attackStance];
   reach=measuredReach;
   top=f.y-high;
   bottom=f.y-low;
  }else{
-  const height=move.launch?.79:f.key==='kingbum'?(f.attackStance==='low'?.51:.74):
-   f.attackStance==='low'?.18:f.attackStance==='air'?.30:.56;
+  const height=move.launch?.79:f.attackStance==='low'?.18:f.attackStance==='air'?.30:.56;
   const center=f.y-size*height;
   const halfHeight=size*(move.launch?.075:.105);
   top=center-halfHeight;
