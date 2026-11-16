@@ -25,7 +25,7 @@ function hit(source,target,damage,knock=15,range=Infinity,contactX=source.x,dire
  const impact=point??{x:direction>0?box.left:box.right,y:(box.top+box.bottom)/2};
  const front=target.dir*(contactX-target.x)>-12;
  const blocked=target.grounded&&type!=='throw'&&target.block&&target.guard>0&&front&&(level==='high'||level==='low'&&target.lowGuard||level==='mid'&&!target.lowGuard);
- let multiplier=source.damageBuff>0?1.4:1;
+ let multiplier=source.damageBuff>0?(source.c.powers[2].damageMultiplier??1.4):1;
  let amount=damage*multiplier*(source.c.atk||1);
  if(blocked){
   amount=type==='normal'?0:Math.min(Math.max(0,target.hp-1),Math.round(amount*.13));
@@ -250,7 +250,17 @@ function resolveSpecial(f,slot){
    fx('text',f.x,f.y-214,'#74ceff',.7,0,{text:'PITUFOS!'});
   }else projectile(f,'pitufo',{offsetX:f.c.size*.66,offsetY:f.c.size*.59,radius:25,damage:data.damage,speed:590,color:'#6fc7ff'});
   break;
- case 'gaga':if(slot===0){f.boostedStretch=true;if((enemy.x-f.x)*f.dir>=0&&Math.abs(enemy.y-f.y)<125)hit(f,enemy,data.damage,data.knock,f.buffTimer>0?data.buffRange:data.range);f.boostedStretch=false;}else{f.vy=-650;f.airVX=f.dir*180;f.grounded=false;f.pendingGroundPunch=true;f.groundMove={range:data.range,damage:data.damage,color:'#d6a6ff'};}break;
+ case 'gaga':
+  if(slot===0){
+   const reach=f.buffTimer>0?data.buffRange:data.range;
+   const tip=f.x+f.dir*reach;
+   const strike={left:Math.min(f.x,tip),right:Math.max(f.x,tip),top:f.y-f.c.size*.72,bottom:f.y-f.c.size*.46};
+   if(boxesOverlap(strike,hurtbox(enemy)))hit(f,enemy,data.damage,data.knock);
+  }else{
+   f.vy=-650;f.airVX=f.dir*180;f.grounded=false;f.pendingGroundPunch=true;
+   f.groundMove={range:data.range,damage:data.damage,color:'#d6a6ff'};
+  }
+  break;
  case 'dino':if(slot===0){if(!startGrab(f,enemy))fx('text',f.x,f.y-195,'#dfb65d',.5,0,{text:'ERROU'});}else{
   const scale=f.c.size/64;
   fx('dinoBeam',f.x+f.dir*9*scale,f.y-55*scale,'#a2ff40',.24,38,
