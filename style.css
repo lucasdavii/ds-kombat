@@ -132,7 +132,7 @@
 }
 .match-slot strong {color:var(--arcade-paper);font-size:clamp(13px,2vw,22px)}
 .selection .select-status {text-align:center;margin:10px 0 8px}
-.selection .roster-grid {grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.selection .roster-grid {grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
 .selection .fighter-card {
   align-items:center;
   text-align:center;
@@ -154,6 +154,11 @@
   width:clamp(23px,4vw,50px);
 }
 .fighter-avatar::before,.fighter-avatar::after {border-radius:0;background:#ead1b1}
+.fighter-avatar.king-avatar {
+  background:#5a3b57 url("assets/fighters/king-bum.png") 0 0 / 400% 300% no-repeat;
+  image-rendering:pixelated;
+}
+.fighter-avatar.king-avatar::before,.fighter-avatar.king-avatar::after {display:none}
 .pick-tags {height:15px;display:flex;justify-content:center;gap:3px}
 .pick-tag {background:var(--slot);color:#26192c;padding:1px 3px;font:900 10px ui-monospace,monospace}
 .selection .select-actions {justify-content:space-between;margin-top:12px}

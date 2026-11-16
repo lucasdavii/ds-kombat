@@ -1,6 +1,6 @@
 # DS KOMBAT
 
-Protótipo de luta 2D para navegador, feito com HTML, CSS e JavaScript Canvas. Tem seis personagens, jogo local para duas pessoas e modo contra CPU.
+Protótipo de luta 2D para navegador, feito com HTML, CSS e JavaScript Canvas. Tem sete personagens, jogo local para duas pessoas e modo contra CPU.
 
 ## Abrir o jogo
 
