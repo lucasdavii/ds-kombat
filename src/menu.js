@@ -9,7 +9,7 @@ function setStatus(text){$('stateText').textContent=text;}
 
 function showHome(){clearTransient();screen='home';game=null;setStatus('MENU INICIAL');$('moveInfo').innerHTML='<div class="moves-placeholder">Escolha um personagem para ver os movimentos especiais.</div>';
  showModal(`<div class="hero-menu">
-  <h1 class="hero-title">RUA <em>FIGHTERS</em></h1>
+  <h1 class="hero-title">DS <em>KOMBAT</em></h1>
   <div class="home-modes">
    ${btn('1 JOGADOR <small>VS CPU</small>','solo')}
    ${btn('2 JOGADORES <small>DUELO LOCAL</small>','local','secondary')}
@@ -41,6 +41,7 @@ function showSelection(){
   return `<button class="fighter-card${labels?' fighter-picked':''}" data-char="${key}">
    <span class="fighter-avatar" aria-hidden="true"></span>
    <span class="fighter-name">${fighterProfileName(FIGHTERS[key])}</span>
+   <span class="fighter-stats">${FIGHTERS[key].role} · ${FIGHTERS[key].hp} PV</span>
    <span class="pick-tags">${labels}</span>
   </button>`;
  }).join('');

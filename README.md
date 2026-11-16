@@ -1,11 +1,11 @@
-# RUA FIGHTERS
+# DS KOMBAT
 
 Protótipo de luta 2D para navegador, feito com HTML, CSS e JavaScript Canvas. Tem seis personagens, jogo local para duas pessoas e modo contra CPU.
 
 ## Abrir o jogo
 
-1. Abra esta pasta no VS Code.
-2. Execute a tarefa **RUA FIGHTERS: abrir servidor local** pelo menu Terminal → Executar Tarefa.
+1. Abra o terminal na pasta do jogo.
+2. Execute `python3 -m http.server 8000`.
 3. Acesse `http://localhost:8000` no navegador.
 
 Também é possível abrir `index.html` diretamente. O servidor local costuma evitar bloqueios do navegador ao carregar imagens.

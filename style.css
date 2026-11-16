@@ -145,6 +145,7 @@
 }
 .selection .fighter-card:hover {transform:none;background:#543149;border-color:var(--arcade-gold)}
 .selection .fighter-picked {border-color:var(--arcade-gold)}
+.fighter-stats {color:#e1cddd;font:700 clamp(8px,1vw,11px)/1.25 ui-monospace,monospace}
 .fighter-card .fighter-avatar {
   border-radius:0;
   clip-path:var(--arcade-block);
