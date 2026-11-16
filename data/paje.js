@@ -12,7 +12,7 @@ FIGHTERS.paje={
  },
  powers:[
   {startup:15,duration:36,damage:10,range:125,knock:48,cooldown:230},
-  {startup:18,duration:55,damage:21,range:108,knock:64,cooldown:300},
+  {startup:18,duration:55,damage:21,range:144,knock:64,cooldown:300},
   {startup:22,duration:68,damage:10,range:105,knock:4,meterCost:100,invulnerability:0},
  ],
 };

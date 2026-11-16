@@ -65,7 +65,7 @@ function advanceKingPower(f,move,previous){
  if(move.slot!==1){
   const start=move.slot===0?kingChargeStart:12/60;
   const activeTime=Math.max(0,Math.min(move.elapsed,move.contact)-Math.max(previous,start));
-  f.x=clamp(f.x+f.dir*activeTime*(move.slot===0?325:235),55,W-55);
+  f.x=clamp(f.x+f.dir*activeTime*(move.slot===0?540:235),55,W-55);
  }
  if(!move.comboTarget)return;
  const next=kingCombo[move.comboIndex];
