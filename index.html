@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a090f">
+  <meta name="description" content="RUA FIGHTERS: jogo de luta 2D arcade com seis personagens e multiplayer local.">
+  <title>RUA FIGHTERS — edição de testes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-flash">⚡</span><div><strong>RUA <span>FIGHTERS</span></strong><small>ARCADE // EDIÇÃO DE TESTE</small></div></div>
+      <div class="top-actions"><span class="pill">PIXEL 2D • 6 LUTADORES</span><button id="soundToggle" class="mini" title="Ativar/desativar efeitos sonoros">🔊 ÁUDIO</button><button id="fullscreenBtn" class="mini" title="Tela cheia">⛶ TELA CHEIA</button></div>
+    </header>
+    <section class="layout">
+      <div class="game-column">
+        <div class="gamebox" id="gamebox">
+          <canvas id="arena" width="1280" height="720" aria-label="Arena de luta 2D"></canvas>
+          <div class="screenfilter" aria-hidden="true"></div>
+          <div id="modal" class="modal" aria-live="polite"></div>
+          <div id="pausedOverlay" class="paused hidden"><h2>PAUSADO</h2><p>ESC para continuar</p><button data-action="resume" class="primary">CONTINUAR</button><button data-action="restart" class="secondary">REINICIAR LUTA</button><label>Volume <input id="volume" type="range" min="0" max="1" step=".05" value=".7"></label><details><summary>COMANDOS</summary><p>J1: WASD · F/G golpes · H defesa · R/T especiais · Y ultimate<br>J2: setas · J/K golpes · L defesa · U/I especiais · O ultimate<br>↓ ↘ → + soco/chute: especial (espelhado)<br>Baixo + golpe: baixo · salto + golpe: aéreo<br>Escape do agarrão: soco + chute juntos (7 quadros)<br>Xbox: A/B golpes · LB/RB especiais · LT ultimate · RT bloqueio</p></details><button data-action="menu" class="secondary">MENU</button></div>
+        </div>
+        <div class="underbar"><span><i class="dot"></i><b id="stateText">AGUARDANDO JOGADORES</b></span><span id="padsText">🎮 0 CONTROLES DETECTADOS</span></div>
+      </div>
+      <aside class="sidebar">
+        <div class="side-card controls"><h3>COMANDOS</h3><div class="control-group"><h4><span class="p1">●</span> JOGADOR 1</h4><div class="control-line"><kbd>W A S D</kbd> <span>mover / pular / agachar</span></div><div class="control-line"><kbd>F</kbd><span>soco</span><kbd>G</kbd><span>chute</span></div><div class="control-line"><kbd>H</kbd><span>DEFENDER (segurar)</span></div><div class="control-line"><kbd>R</kbd><span>especial 1</span><kbd>T</kbd><span>especial 2</span></div><div class="control-line"><kbd>Y</kbd><span>ultimate (barra cheia)</span></div></div><div class="control-group"><h4><span class="p2">●</span> JOGADOR 2</h4><div class="control-line"><kbd>↑ ← ↓ →</kbd><span>mover / pular / agachar</span></div><div class="control-line"><kbd>J</kbd><span>soco</span><kbd>K</kbd><span>chute</span></div><div class="control-line"><kbd>L</kbd><span>DEFENDER (segurar)</span></div><div class="control-line"><kbd>U</kbd><span>especial 1</span><kbd>I</kbd><span>especial 2</span></div><div class="control-line"><kbd>O</kbd><span>ultimate</span></div></div><p class="gamepad-note">Combos opcionais: ↓ ↘ → + soco/chute (espelhado à esquerda) = especiais. 🎮 Controles: analógico/direcional = movimento; A = soco, B = chute, LB = especial 1, RB = especial 2, LT = ultimate, RT = bloqueio. Pressione START para pausar.</p></div>
+        <div class="side-card moves"><h3>GOLPES DO PERSONAGEM</h3><div id="moveInfo" class="moves-placeholder">Escolha um personagem para conferir seus poderes.</div></div>
+        <div class="side-footer">Jogo autoral de luta arcade. Inspirado em clássicos de combate 2D, com visual e personagens próprios.</div>
+      </aside>
+    </section>
+    <footer class="footer">VERSÃO DE TESTES • ARQUIVOS EDITÁVEIS PARA CODEX • <a href="README.md" target="_blank">README</a></footer>
+  </main>
+  <script src="data/combat.js" defer></script>
+  <script src="data/chapinha.js" defer></script>
+  <script src="data/pitufo.js" defer></script>
+  <script src="data/gaga.js" defer></script>
+  <script src="data/dino.js" defer></script>
+  <script src="data/pneuson.js" defer></script>
+  <script src="data/mucutuba.js" defer></script>
+  <script src="data/assets.js" defer></script>
+  <script src="power-frames.js" defer></script>
+  <script src="data/revision-sprites.js" defer></script>
+  <script src="src/state.js" defer></script>
+  <script src="src/textures.js" defer></script>
+  <script src="src/audio.js" defer></script>
+  <script src="src/poses.js" defer></script>
+  <script src="src/menu.js" defer></script>
+  <script src="src/input.js" defer></script>
+  <script src="src/match.js" defer></script>
+  <script src="src/combat.js" defer></script>
+  <script src="src/cpu.js" defer></script>
+  <script src="src/entities.js" defer></script>
+  <script src="src/simulation.js" defer></script>
+  <script src="src/render.js" defer></script>
+  <script src="src/training.js" defer></script>
+  <script src="revision-render.js" defer></script>
+  <script src="power-fx.js" defer></script>
+  <script src="game.js" defer></script>
+</body>
+</html>
