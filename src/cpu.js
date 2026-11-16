@@ -18,10 +18,16 @@ function aiInput(f,enemy,dt){
   if(f.energy>=100&&Math.random()<.65)plan.ult=true;
   else if(d<155&&Math.random()<.62){plan[Math.random()<.55?'punch':'kick']=true;if(Math.random()<.22)plan.down=true;}
   else if(Math.random()<cfg.special){
-   if(f.key==='dino')plan[d<148&&enemy.grounded?'sp1':'sp2']=true;
+   if(f.key==='dino'){
+    const canGrab=d<122&&enemy.grounded&&enemy.stun<=0&&enemy.invincible<=0&&f.cooldowns[0]<=0;
+    plan[canGrab?'sp1':'sp2']=true;
+   }
    else if(f.key==='gaga')plan[d>170?'sp1':'sp2']=true;
    else if(f.key==='chapinha')plan[d>190?'sp1':'sp2']=true;
-   else if(f.key==='mucutuba')plan[f.hp<f.maxHp*.65&&Math.random()<.6?'sp2':'sp1']=true;
+   else if(f.key==='mucutuba'){
+    const canHeal=d>230&&f.hp<=f.maxHp-15&&f.energy>=specialCost(f.c,1)&&f.cooldowns[1]<=0;
+    plan[canHeal?'sp2':'sp1']=true;
+   }
    else plan[Math.random()<.5?'sp1':'sp2']=true;
   }
   f.aiPending={plan,wait:cfg.reaction/60};
