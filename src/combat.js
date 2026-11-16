@@ -66,7 +66,8 @@ function hit(source,target,damage,knock=15,range=Infinity,contactX=source.x,dire
   fx('contact',impact.x,impact.y,'#fff0bd',.18,damage>=15?54:39);target.hitFlash=.12;
  }
  target.hp=game.reviewSession&&training.enabled&&training.health?target.maxHp:clamp(target.hp-amount,0,target.maxHp);energy(source,blocked?3:8);energy(target,blocked?3:6);
- if(!blocked)impact.onHit?.(impact);
+ if(blocked)impact.onBlock?.(impact);
+ else impact.onHit?.(impact);
  spawnParticle(impact.x,impact.y,blocked?'#79caff':source.c.accent,blocked?5:10,180);
  sound(blocked?210:type==='normal'?110:85,.07,blocked?'triangle':'sawtooth',.035);
  game.screenShake=blocked?2:Math.min(10,3+damage*.15);
