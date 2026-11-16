@@ -233,7 +233,7 @@ function drawMinions(){for(const m of minions){if(m.delay>0)continue;if(m.type==
  }
 }}
 // Efeitos, HUD e ferramentas de treino
-function drawFX(t,foreground=false){for(const v of visualFX){if(foreground!==(v.type==='contact'||v.type==='guardContact'||v.type==='pitufoMuzzle'||v.type==='workshopRelease'||v.type==='dinoBeam'||v.type==='lightning'||v.type==='ancestorImpact'||v.type==='slamDebris'))continue;const q=1-v.life/v.max;ctx.save();ctx.globalAlpha=clamp(v.life/v.max,0,1);const c=v.color;if(typeof drawPowerEffect==='function'&&drawPowerEffect(v,q,t)){ctx.restore();continue;}switch(v.type){
+function drawFX(t,foreground=false){for(const v of visualFX){if(foreground!==(v.type==='contact'||v.type==='guardContact'||v.type==='pitufoMuzzle'||v.type==='workshopRelease'||v.type==='dinoBeam'||v.type==='lightning'||v.type==='ancestorImpact'||v.type==='slamDebris'||v.type.startsWith('king')))continue;const q=1-v.life/v.max;ctx.save();ctx.globalAlpha=clamp(v.life/v.max,0,1);const c=v.color;if(v.type.startsWith('king')&&drawKingEffect(v,q)){ctx.restore();continue;}if(typeof drawPowerEffect==='function'&&drawPowerEffect(v,q,t)){ctx.restore();continue;}switch(v.type){
  case 'burst':ctx.strokeStyle=c;ctx.lineWidth=6;ctx.beginPath();ctx.arc(v.x,v.y,v.radius*(.6+q),0,7);ctx.stroke();break;
  case 'slash':ctx.strokeStyle=c;ctx.lineWidth=10;ctx.beginPath();ctx.arc(v.x,v.y,v.radius,Math.PI*1.12,Math.PI*1.95);ctx.stroke();break;
  case 'shock':ctx.strokeStyle=c;ctx.lineWidth=10;ctx.beginPath();ctx.ellipse(v.x,FLOOR+3,v.radius*q,22,0,0,7);ctx.stroke();break;
