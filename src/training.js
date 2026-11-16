@@ -6,9 +6,9 @@
 function drawDebugBoxes(){
  for(const f of game.f){
   const box=(b,color)=>{ctx.strokeStyle=color;ctx.lineWidth=2;ctx.strokeRect(b.left,b.top,b.right-b.left,b.bottom-b.top);};
-  box(hurtbox(f),'#65dbff');const half=f.c.size*.22;
-  box({left:f.x-half,right:f.x+half,top:f.y-f.c.size*.6,bottom:f.y},'#ffe15a');
-  if(f.pendingStrike&&f.basicMove){const elapsed=f.basicMove.duration-f.actionTime;if(elapsed>=f.basicMove.impact&&elapsed<=f.basicMove.impact+f.basicMove.active)box(strikeBox(f),'#ff5265');}
+  if(f.invincible<=0&&f.action!=='down'&&f.action!=='wakeup')box(hurtbox(f),'#65dbff');
+  box(pushbox(f),'#ffe15a');
+  if(f.action==='attack'&&f.basicMove&&attackTimeline(f).active)box(strikeBox(f),'#ff5265');
   pixelText(f.action+' '+Math.ceil(f.actionTime*60)+'q',f.x,f.y-f.c.size-20,16,'#fff1d5','center',2);
  }
  for(const p of projectiles){ctx.strokeStyle='#ff5265';ctx.strokeRect(p.x-p.radius,p.y-p.radius,p.radius*2,p.radius*2);}

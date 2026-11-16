@@ -60,14 +60,6 @@ function updateFighter(f, opponent, input, dt, captured = false) {
  }
  updateQuickStep(f,dt);
  updatePower(f,dt);
- if(f.pendingStrike){
-  const move=f.basicMove,timeline=attackTimeline(f),elapsed=timeline.elapsed;
-  if(f.action!=='attack'||elapsed>move.impact+move.active)f.pendingStrike=false;
-  else if(timeline.active&&!f.strikeConnected){
-   const connected=resolveBasicStrike(f,opponent);
-   if(connected){f.strikeConnected=true;f.strikeContactTime=f.actionTime;f.pendingStrike=false;}
-  }
- }
  tryAttackCancel(f);
  const actionable=f.stun<=0&&f.actionTime<=0;
  if(actionable)f.lowGuard=!!input.down&&f.grounded;
@@ -106,7 +98,11 @@ function updateFighter(f, opponent, input, dt, captured = false) {
   break;
  }
  }
- if(f.dashTime>0){f.x+=f.dir*f.dashPower*dt;f.dashTime-=dt;if(f.dashHitPending&&Math.abs(opponent.x-f.x)<110&&Math.abs(opponent.y-f.y)<100){hit(f,opponent,f.c.powers[0].damage,f.c.powers[0].knock,f.c.powers[0].range);f.dashHitPending=false;}spawnParticle(f.x-f.dir*20,f.y-36,f.c.accent,1,55);}else if(actionable&&f.actionTime<=0){let horizontal=(input.right?1:0)-(input.left?1:0);if(blocking||input.down&&f.grounded||!f.grounded)horizontal=0;
+ if(f.dashTime>0){
+  f.x+=f.dir*f.dashPower*dt;
+  f.dashTime=Math.max(0,f.dashTime-dt);
+  spawnParticle(f.x-f.dir*20,f.y-36,f.c.accent,1,55);
+ }else if(actionable&&f.actionTime<=0){let horizontal=(input.right?1:0)-(input.left?1:0);if(blocking||input.down&&f.grounded||!f.grounded)horizontal=0;
  f.backstep=horizontal*f.dir<0;f.lowGuard=input.down;f.x+=horizontal*f.c.speed*dt*(input.down?.45:1);if(input.down&&f.grounded&&!blocking)f.action='crouch';else if(blocking)f.action='guard';else if(horizontal!==0&&f.grounded)f.action='walk';else if(f.grounded&&f.actionTime<=0)f.action='idle';
  }
  f.x=clamp(f.x,55,W-55);
@@ -179,10 +175,13 @@ function update(dt) {
  game.collectHits = true;
  updateFighter(p1, p2, a, dt, true);
  if (!game.roundOver) updateFighter(p2, p1, b, dt, true);
+ resolveBodyCollision(p1, p2, leftBefore);
+ updateBasicStrike(p1,p2);
+ updateBasicStrike(p2,p1);
+ updateDashStrike(p1,p2);
+ updateDashStrike(p2,p1);
  resolveHitQueue();
  if (game.roundOver) return;
-
- resolveBodyCollision(p1, p2, leftBefore);
  updateEntities(dt);
  game.flash = Math.max(0, game.flash - dt);
  game.screenShake = Math.max(0, game.screenShake - 38 * dt);

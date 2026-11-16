@@ -161,19 +161,57 @@ function areaHit(source,range,dmg,color){
  let enemy=game.f[1-source.player];if(Math.abs(source.x-enemy.x)<range&&Math.abs(source.y-enemy.y)<130){hit(source,enemy,dmg,Math.round(range*.15),range)}spawnParticle(source.x,source.y-10,color,20,390);}
 
 function hurtbox(f){
- const low=f.grounded&&(f.action==='crouch'||(f.action==='guard'||f.action==='blockstun')&&f.lowGuard||f.action==='attack'&&f.attackStance==='low');
- return {left:f.x-32,right:f.x+32,top:f.y-f.c.size*(low?.55:.9),bottom:f.y-8};
+ const low=f.grounded&&(f.action==='crouch'||f.action==='land'||f.action==='down'||f.action==='wakeup'||
+  (f.action==='guard'||f.action==='blockstun')&&f.lowGuard||
+  f.action==='attack'&&f.attackStance==='low');
+ const halfWidth=f.c.size*(low?.18:.15);
+ return {left:f.x-halfWidth,right:f.x+halfWidth,top:f.y-f.c.size*(low?.55:.91),bottom:f.y-3};
+}
+function pushbox(f){
+ const body=hurtbox(f);
+ const halfWidth=f.c.size*.22;
+ return {left:f.x-halfWidth,right:f.x+halfWidth,top:body.top+(body.bottom-body.top)*.32,bottom:body.bottom};
+}
+function boxesOverlap(a,b){
+ return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
 }
 function strikeBox(f){
  const m=f.basicMove, height=f.c.size;
- const cy=f.y-height*(m.launch?.79:f.attackStance==='low'?(f.attackKind==='kick'?.18:.40):f.attackStance==='air'?.48:.65);
- return {left:f.dir>0?f.x+16:f.x-m.range,right:f.dir>0?f.x+m.range:f.x-16,top:cy-22,bottom:cy+22};
+ const kick=f.attackKind==='kick';
+ const center=f.y-height*(m.launch?.79:f.attackStance==='low'?(kick?.18:.40):
+  f.attackStance==='air'?(kick?.30:.48):kick?.56:.65);
+ const halfHeight=height*(kick?.095:.075);
+ const start=f.x+f.dir*height*.06,end=f.x+f.dir*m.range;
+ return {left:Math.min(start,end),right:Math.max(start,end),top:center-halfHeight,bottom:center+halfHeight};
 }
 function resolveBasicStrike(f,target){
  const a=strikeBox(f),b=hurtbox(target);
- if(a.left>b.right||a.right<b.left||a.top>b.bottom||a.bottom<b.top)return;
+ if(!boxesOverlap(a,b))return false;
  const m=f.basicMove;
  return hit(f,target,m.damage,m.knock,Infinity,f.x,f.dir,f.attackStance==='low'?'low':f.attackStance==='air'?'mid':'high','normal',{x:f.dir>0?Math.max(a.left,b.left):Math.min(a.right,b.right),y:(Math.max(a.top,b.top)+Math.min(a.bottom,b.bottom))/2,launch:m.launch});
+}
+function updateBasicStrike(f,target){
+ if(!f.pendingStrike)return;
+ const move=f.basicMove;
+ const timeline=attackTimeline(f);
+ if(f.action!=='attack'||timeline.elapsed>=move.impact+move.active-1e-9){
+  f.pendingStrike=false;
+  return;
+ }
+ if(timeline.active&&resolveBasicStrike(f,target)){
+  f.strikeConnected=true;
+  f.strikeContactTime=f.actionTime;
+  f.pendingStrike=false;
+ }
+}
+function updateDashStrike(f,target){
+ if(!f.dashHitPending)return;
+ if(f.dashTime<=0){f.dashHitPending=false;return;}
+ const size=f.c.size, reach=f.x+f.dir*size*.43;
+ const strike={left:Math.min(f.x,reach),right:Math.max(f.x,reach),top:f.y-size*.75,bottom:f.y-size*.30};
+ if(!boxesOverlap(strike,hurtbox(target)))return;
+ const data=f.c.powers[0];
+ if(hit(f,target,data.damage,data.knock,Infinity))f.dashHitPending=false;
 }
 function basicAttack(f,kind,uppercut=false){
  if(!canAttack(f))return;
@@ -218,7 +256,19 @@ function resolveSpecial(f,slot){
   else projectile(f,'tire',{...offset,radius:56,speed:420,life:2.4,color:'#ff8e40'});
   break;
  }
- case 'mucutuba':if(slot===0){projectile(f,'ancestor',{radius:48,damage:data.damage,speed:480,color:'#75ff51'});fx('ancestor',f.x,f.y-125,'#b4ff67',.34,110);}else{f.hp=clamp(f.hp+data.healing,0,f.maxHp);f.guard=clamp(f.guard+30,0,f.maxGuard);f.healthBuff=5.5;fx('heal',f.x,f.y-135,'#81ff56',1,65);fx('text',f.x,f.y-211,'#a9ff72',.8,0,{text:'+'+data.healing+' VIDA'});sound(450,.35,'sine',.07);}break;
+ case 'mucutuba':
+  if(slot===0){
+   projectile(f,'ancestor',{radius:48,damage:data.damage,speed:480,color:'#75ff51'});
+   fx('ancestor',f.x,f.y-125,'#b4ff67',.34,110);
+  }else{
+   const recovered=Math.min(data.healing,f.maxHp-f.hp);
+   f.hp+=recovered;
+   f.guard=clamp(f.guard+data.guardRestore,0,f.maxGuard);
+   fx('heal',f.x,f.y-135,'#81ff56',1,65);
+   if(recovered>0)fx('text',f.x,f.y-211,'#a9ff72',.8,0,{text:'+'+Number(recovered.toFixed(1))+' VIDA'});
+   sound(450,.35,'sine',.07);
+  }
+  break;
  }
 }
 function ultimate(f){if(!canAttack(f)||f.energy<100)return;const data=f.c.powers[2];f.energy-=data.meterCost;f.action='ultimate';f.actionTime=data.duration/60;f.invincible=data.invulnerability/60;game.flash=.12;game.screenShake=8;fx('text',W/2,252,f.c.accent,1.1,0,{text:`ULTIMATE • ${f.c.ultimate}`});sound(340,.35,'sawtooth',.06);
@@ -261,11 +311,8 @@ function resolveUltimate(f){
 
 function resolveBodyCollision(a,b,firstOnLeft){
  if(a.grab||b.grab||a.grabbedBy||b.grabbedBy)return;
- const boxA=hurtbox(a),boxB=hurtbox(b);
- // Pushboxes stop at shoulder level, independently of attack hurtboxes.
- const shoulderA=boxA.top+(boxA.bottom-boxA.top)*.32;
- const shoulderB=boxB.top+(boxB.bottom-boxB.top)*.32;
- if(boxA.bottom<=shoulderB||boxB.bottom<=shoulderA)return;
+ const boxA=pushbox(a),boxB=pushbox(b);
+ if(boxA.bottom<=boxB.top||boxB.bottom<=boxA.top)return;
  const [left,right]=firstOnLeft?[a,b]:[b,a];
  const distance=(left.c.size+right.c.size)*.22;
  if(right.x-left.x>=distance)return;

@@ -44,7 +44,32 @@ function updateEntities(dt){
    break;
   }
  }
- for(let i=projectiles.length-1;i>=0;i--){const p=projectiles[i];const previousX=p.x;p.x+=p.vx*dt;p.life-=dt;p.age=(p.age||0)+dt;if(Math.random()<.34)spawnParticle(p.x-p.dir*17,p.y,p.color,1,100);const target=game.f[1-p.source.player];if(target.hp>0&&Math.max(previousX,p.x)+p.radius>=hurtbox(target).left&&Math.min(previousX,p.x)-p.radius<=hurtbox(target).right&&p.y+p.radius>=hurtbox(target).top&&p.y-p.radius<=hurtbox(target).bottom){hit(p.source,target,p.damage,26,Infinity,p.x-p.dir*24,p.dir,'high','special',{x:clamp(p.x,hurtbox(target).left,hurtbox(target).right),y:clamp(p.y,hurtbox(target).top,hurtbox(target).bottom)});if(game.roundOver)return;fx(p.type==='ancestor'?'ancestorImpact':'burst',p.x,p.y,p.color,.26,60);projectiles.splice(i,1);}else if(p.life<0||p.x<-130||p.x>W+130)projectiles.splice(i,1);}
+ for(let i=projectiles.length-1;i>=0;i--){
+  const p=projectiles[i],previousX=p.x;
+  p.x+=p.vx*dt;
+  p.life-=dt;
+  p.age+=dt;
+  if(p.life<=0||p.x<-130||p.x>W+130){
+   projectiles.splice(i,1);
+   continue;
+  }
+  if(Math.random()<.34)spawnParticle(p.x-p.dir*17,p.y,p.color,1,100);
+  const target=game.f[1-p.source.player],box=hurtbox(target);
+  const pointY=clamp(p.y,box.top,box.bottom);
+  // Sweep the visible ellipse horizontally, without the empty corners of its bounding box.
+  const radiusY=p.radius*(p.type==='ancestor'?.65:p.type==='grease'?.8:1);
+  const height=(p.y-pointY)/radiusY;
+  if(Math.abs(height)>=1)continue;
+  const reach=p.radius*Math.sqrt(1-height*height);
+  if(Math.max(previousX,p.x)+reach<=box.left||Math.min(previousX,p.x)-reach>=box.right)continue;
+  const edge=p.dir>0?box.left:box.right;
+  const contactX=clamp(edge-p.dir*reach,Math.min(previousX,p.x),Math.max(previousX,p.x));
+  const point={x:clamp(contactX+p.dir*reach,box.left,box.right),y:pointY};
+  if(!hit(p.source,target,p.damage,26,Infinity,contactX,p.dir,'high','special',point))continue;
+  if(game.roundOver)return;
+  fx(p.type==='ancestor'?'ancestorImpact':'burst',point.x,point.y,p.color,.26,60);
+  projectiles.splice(i,1);
+ }
  for(let i=minions.length-1;i>=0;i--){const m=minions[i];m.life-=dt;if(m.delay>0){m.delay-=dt;continue;}if(m.type==='brother'){const finished=updateGordin(m,dt);if(game.roundOver)return;if(finished)minions.splice(i,1);continue;}m.activeAge=(m.activeAge??0)+dt;
   const acceleration=.35+.65*clamp(m.activeAge/.18,0,1);
   m.x+=m.dir*m.speed*acceleration*dt;
