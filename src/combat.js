@@ -97,7 +97,7 @@ function tryAttackCancel(f){
   basicAttack(f,'kick');return;
  }
  for(const [key,slot] of [['sp1',0],['sp2',1]]){
-  if(!f.inputBuffer?.[key]||f.cooldowns[slot]>0||f.energy<specialCost(f,slot)||!f.grounded)continue;
+  if(!f.inputBuffer?.[key]||f.cooldowns[slot]>0||f.energy<specialCost(f.c,slot)||!f.grounded)continue;
   consumeInput(f,key);f.actionTime=0;f.pendingStrike=false;special(f,slot);return;
  }
 }
@@ -226,8 +226,8 @@ function basicAttack(f,kind,uppercut=false){
  sound(kick?165:210,.08,'square',.04);
 }
 function canAttack(f){return !game.roundOver&&game.phase==='fight'&&f.stun<=0&&f.actionTime<=0&&f.hp>0;}
-function specialCost(f,slot){return f.c.powers[slot].energyCost??20;}
-function special(f,slot){if(!canAttack(f)||f.cooldowns[slot]>0||f.energy<specialCost(f,slot))return;energy(f,-specialCost(f,slot));const data=f.c.powers[slot];f.cooldowns[slot]=data.cooldown/60;f.specialSlot=slot;f.action='special';f.actionTime=data.duration/60;
+function specialCost(character,slot){return character.powers[slot].energyCost??20;}
+function special(f,slot){if(!canAttack(f)||f.cooldowns[slot]>0||f.energy<specialCost(f.c,slot))return;energy(f,-specialCost(f.c,slot));const data=f.c.powers[slot];f.cooldowns[slot]=data.cooldown/60;f.specialSlot=slot;f.action='special';f.actionTime=data.duration/60;
  const contact=data.startup/60;
  f.powerMove={slot,pose:'special',duration:f.actionTime,elapsed:0,contact,fired:contact===0};
  if(contact===0)resolveSpecial(f,slot);

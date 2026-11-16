@@ -92,7 +92,7 @@ function updateFighter(f, opponent, input, dt, captured = false) {
  }
 
  if(f.actionTime<=0)for(const key of ['ult','sp1','sp2','punch','kick'])if(f.inputBuffer?.[key]){
-  if(key==='ult'&&f.energy<100||key==='sp1'&&(f.cooldowns[0]>0||f.energy<specialCost(f,0))||key==='sp2'&&(f.cooldowns[1]>0||f.energy<specialCost(f,1)))continue;
+  if(key==='ult'&&f.energy<100||key==='sp1'&&(f.cooldowns[0]>0||f.energy<specialCost(f.c,0))||key==='sp2'&&(f.cooldowns[1]>0||f.energy<specialCost(f.c,1)))continue;
   consumeInput(f,key);
   if(key==='ult')ultimate(f);else if(key==='sp1'||key==='sp2')special(f,key==='sp1'?0:1);else basicAttack(f,key);
   break;
