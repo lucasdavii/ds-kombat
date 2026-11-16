@@ -9,6 +9,8 @@ function kingArmored(f,damage,type,impact){
     move.elapsed<kingChargeStart||move.elapsed>move.contact||
     type!=='normal'||damage>10||impact.launch)return false;
  move.armorSpent=true;
+ kingEffect(f,'kingArmor',f.x,f.y-f.c.size*.58,.22,50);
+ sound(125,.09,'triangle',.055);
  return true;
 }
 
@@ -26,7 +28,40 @@ function kingContact(f,target,reach){
   top:f.y-f.c.size*.77,bottom:f.y-f.c.size*.34},hurtbox(target));
 }
 
+function kingEffect(f,type,x,y,duration,radius){
+ fx(type,x,y,'#ffcb72',duration,radius,{direction:f.dir});
+}
+
+function kingPowerWindup(f,move,previous){
+ if(previous===0){
+  if(move.slot===0)kingEffect(f,'kingDust',f.x,f.y,.24,73);
+  if(move.slot===2){
+   kingEffect(f,'kingCrown',f.x,f.y-f.c.size-19,.46,56);
+   kingEffect(f,'kingDust',f.x,f.y,.38,105);
+  }
+ }
+ if(move.slot===0&&previous<kingChargeStart&&move.elapsed>=kingChargeStart)
+  kingEffect(f,'kingStreak',f.x+f.dir*41,f.y-f.c.size*.58,.27,115);
+ if(move.slot===1){
+  for(const beat of [.23,.50,.64]){
+   if(previous<beat&&move.elapsed>=beat){
+    kingEffect(f,'kingCrumbs',f.x+f.dir*48,f.y-f.c.size*.80,.28,35);
+    if(beat>=.5)sound(190,.045,'triangle',.035);
+   }
+  }
+ }
+}
+
+function kingImpact(f,point,finisher=false){
+ kingEffect(f,finisher?'kingFinisher':'kingImpact',point.x,point.y,finisher?.38:.21,finisher?132:71);
+ if(finisher){
+  kingEffect(f,'kingDust',point.x,FLOOR,.38,145);
+  sound(67,.21,'triangle',.08);
+ }
+}
+
 function advanceKingPower(f,move,previous){
+ kingPowerWindup(f,move,previous);
  if(move.slot!==1){
   const start=move.slot===0?kingChargeStart:12/60;
   const activeTime=Math.max(0,Math.min(move.elapsed,move.contact)-Math.max(previous,start));
@@ -45,17 +80,25 @@ function advanceKingPower(f,move,previous){
  hit(f,target,next.damage,next.knock,Infinity,f.x,f.dir,'high','special',{
   x:f.dir>0?area.left:area.right,y:target.y-target.c.size*.51,
   knockdown:move.comboIndex===kingCombo.length,
+  onHit:point=>kingImpact(f,point,move.comboIndex===kingCombo.length),
  });
 }
 
 function resolveKingSpecial(f,target,slot){
  const move=f.c.powers[slot];
  if(slot===0){
-  if(kingContact(f,target,move.range))hit(f,target,move.damage,move.knock);
+  if(kingContact(f,target,move.range)){
+   const area=hurtbox(target);
+   hit(f,target,move.damage,move.knock,Infinity,f.x,f.dir,'high','special',{
+    x:f.dir>0?area.left:area.right,y:f.y-f.c.size*.55,
+    onHit:point=>kingImpact(f,point),
+   });
+  }
   return;
  }
  const amount=Math.min(f.maxHp*.05,f.maxHp-f.hp);
  f.hp+=amount;
+ kingEffect(f,'kingHeal',f.x,f.y-f.c.size*.40,.62,83);
  if(amount>0)fx('text',f.x,f.y-f.c.size,'#b7ff91',.75,0,{text:'+'+Number(amount.toFixed(1))+' VIDA'});
  sound(310,.14,'triangle',.06);
 }
@@ -66,12 +109,65 @@ function resolveKingUltimate(f,target){
  const area=hurtbox(target);
  hit(f,target,data.damage,data.knock,Infinity,f.x,f.dir,'high','special',{
   x:f.dir>0?area.left:area.right,y:target.y-target.c.size*.58,
-  onHit:()=>{
+  onHit:point=>{
+   kingImpact(f,point);
    if(f.powerMove!==move)return;
    move.comboIndex=0;
    move.comboTarget=target;
   },
  });
+}
+
+function drawKingEffect(v,q){
+ const {type,x,y,radius,direction:dir}=v;
+ if(type==='kingBread')return false;
+ const bright='#fff2bc',gold=v.color,amber='#d87633',shadow='#74382d';
+ const pixel=(dx,dy,w,h,color)=>rect(Math.round(x+dx),Math.round(y+dy),w,h,color);
+ if(type==='kingDust'){
+  for(let j=-3;j<=3;j++){
+   const drift=j*(12+q*radius*.28);
+   const rise=(1-Math.abs(j)/4)*q*34;
+   pixel(drift,-rise,Math.max(4,16-Math.floor(q*10)),6,j%2?gold:'#9b6848');
+   pixel(drift+7,-rise-9,5,4,'#714c3e');
+  }
+ }else if(type==='kingStreak'){
+  for(let j=0;j<4;j++){
+   const tip=(25+q*radius)*dir;
+   const tail=(-radius*.63+q*29)*dir;
+   const h=(j-1.5)*20;
+   poly([[x+tail,y+h],[x+tip,y+h-7],[x+tip-18*dir,y+h+5],[x+tail+21*dir,y+h+5]],j%2?gold:amber);
+  }
+ }else if(type==='kingCrown'){
+  const lift=-Math.round(q*30);
+  poly([[x-44,y+lift-19],[x-22,y+lift-3],[x,y+lift-28],[x+22,y+lift-3],[x+44,y+lift-19],[x+34,y+lift+16],[x-34,y+lift+16]],shadow);
+  poly([[x-35,y+lift-10],[x-21,y+lift+1],[x,y+lift-17],[x+21,y+lift+1],[x+35,y+lift-10],[x+28,y+lift+11],[x-28,y+lift+11]],gold);
+  pixel(-6,lift+2,12,8,bright);
+ }else if(type==='kingHeal'||type==='kingCrumbs'){
+  const healing=type==='kingHeal';
+  for(let j=0;j<(healing?9:6);j++){
+   const angle=j*2.399;
+   const dx=Math.cos(angle)*radius*(.36+q*.64);
+   const dy=Math.sin(angle)*radius*.38-q*(healing?127:24);
+   const color=healing?(j%2?'#b7ff91':'#e8ffc1'):(j%2?gold:amber);
+   if(healing){pixel(dx-2,dy-6,4,12,color);pixel(dx-6,dy-2,12,4,color);}
+   else pixel(dx,dy,6,5,color);
+  }
+ }else{
+  const size=radius*(.44+q*.73);
+  const armor=type==='kingArmor',finisher=type==='kingFinisher';
+  const color=armor?'#a9dcff':gold;
+  for(let j=0;j<(finisher?10:7);j++){
+   const a=j*(Math.PI*2/(finisher?10:7));
+   const cos=Math.cos(a),sin=Math.sin(a);
+   const near=size*.36,far=size*(j%2?1:.70);
+   const spread=finisher?13:8;
+   poly([[x+cos*near-sin*spread,y+sin*near+cos*spread],
+    [x+cos*far,y+sin*far],[x+cos*near+sin*spread,y+sin*near-cos*spread]],
+    j%3===0?bright:color);
+  }
+  if(q<.28)pixel(-8,-8,16,16,bright);
+ }
+ return true;
 }
 
 // Each four-by-four atlas shares the same cell and floor pivot.
