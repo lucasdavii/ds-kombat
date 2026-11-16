@@ -180,7 +180,7 @@ function strikeBox(f){
  const kick=f.attackKind==='kick';
  const center=f.y-height*(m.launch?.79:f.attackStance==='low'?(kick?.18:.40):
   f.attackStance==='air'?(kick?.30:.48):kick?.56:.65);
- const halfHeight=height*(kick?.095:.075);
+ const halfHeight=height*(kick?.105:.075);
  const start=f.x+f.dir*height*.06,end=f.x+f.dir*m.range;
  return {left:Math.min(start,end),right:Math.max(start,end),top:center-halfHeight,bottom:center+halfHeight};
 }
