@@ -8,6 +8,7 @@ function fighterGravity(f){
 }
 function updateFighter(f, opponent, input, dt, captured = false) {
  if (f.hp <= 0) return;
+ const wasGrounded=f.grounded;
  if (!captured) captureInput(f, input);
  tryComboBreak(f,opponent,input);
 
@@ -108,6 +109,7 @@ function updateFighter(f, opponent, input, dt, captured = false) {
  f.x=clamp(f.x,55,W-55);
  if(!f.grounded){f.x=clamp(f.x+(f.airVX||0)*dt,55,W-55);f.vy+=fighterGravity(f)*dt;f.y+=f.vy*dt;if(f.y>=FLOOR){f.y=FLOOR;f.vy=0;f.grounded=true;f.airVX=0;spawnParticle(f.x,FLOOR-4,'#b99572',5,90);if(f.fallOnLanding){f.fallOnLanding=false;knockdown(f,true);}if(f.action==='attack'&&f.attackStance==='air'){f.pendingStrike=false;f.action='land';f.actionTime=.10;}if(f.pendingGroundPunch){f.pendingGroundPunch=false;if(f.action==='special'){const move=f.groundMove||{range:260,damage:21,color:'#ff5b6c'};areaHit(f,move.range,move.damage,move.color);game.screenShake=11;}}if(f.actionTime<=0)f.action='idle';}else if(f.actionTime<=0)f.action='jump';}
  if(f.actionTime===0&&['attack','special','ultimate','hit','run','land','blockstun','throwRecovery','escape'].includes(f.action)){f.action=f.grounded?(input.down?'crouch':'idle'):'jump';}
+ if(f.key==='kingbum')updateKingIdle(f,dt,!wasGrounded&&f.grounded);
  f.prev={...input};
 }
 

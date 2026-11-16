@@ -232,7 +232,7 @@ function drawPower(f){
 }
 
 // Linhas dos atlas: avanço, recuo, rolagem, agarrão, queda e escape.
-const movementAtlases=Object.fromEntries(CHARS.map(key=>[
+const movementAtlases=Object.fromEntries(CHARS.filter(key=>key!=='kingbum').map(key=>[
  key,imageAsset(`assets/fighters/${key}_movement.png`)
 ]));
 function drawMovementPose(f){

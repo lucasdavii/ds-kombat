@@ -11,11 +11,18 @@ function aiInput(f,enemy,dt){
   f.aiDecision=(cfg.decision+Math.floor(Math.random()*12))/60;
   const d=Math.abs(enemy.x-f.x),forward=f.x<enemy.x?'right':'left',back=forward==='right'?'left':'right';
   const projectileThreat=projectiles.some(p=>p.source!==f&&(f.x-p.x)*p.dir>0&&Math.abs(f.x-p.x)<350);
-  const preferred=f.key==='dino'?115:f.key==='chapinha'?125:f.key==='gaga'?230:f.key==='pitufo'?270:220;
+  const preferred=f.key==='kingbum'?105:f.key==='dino'?115:f.key==='chapinha'?125:f.key==='gaga'?230:f.key==='pitufo'?270:220;
   const plan={};if(d>preferred+25)plan[forward]=true;else if(d<preferred-60&&f.x>85&&f.x<W-85)plan[back]=true;
   if((enemy.action==='attack'&&d<210||projectileThreat)&&Math.random()<cfg.guard){plan.block=true;plan.down=enemy.attackStance==='low';}
   else if(Math.random()<cfg.jump&&(projectileThreat||d<230))plan.up=true;
-  if(f.energy>=100&&Math.random()<.65)plan.ult=true;
+  if(f.energy>=100&&(f.key!=='kingbum'||d<145)&&Math.random()<.65)plan.ult=true;
+  else if(f.key==='kingbum'&&!plan.block){
+   const canCharge=f.cooldowns[0]<=0&&f.energy>=specialCost(f.c,0);
+   const canEat=f.cooldowns[1]<=0&&f.energy>=specialCost(f.c,1)&&f.hp<=f.maxHp-8;
+   if(d>=130&&d<187&&canCharge)plan.sp1=true;
+   else if(d<155){plan[d<125?'punch':'kick']=true;plan.down=enemy.lowGuard&&d<135;}
+   else if(d>330&&!projectileThreat&&canEat)plan.sp2=true;
+  }
   else if(d<155&&Math.random()<.62){plan[Math.random()<.55?'punch':'kick']=true;if(Math.random()<.22)plan.down=true;}
   else if(Math.random()<cfg.special){
    if(f.key==='dino'){

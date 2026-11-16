@@ -39,7 +39,7 @@ function showSelection(){
   const labels=selected.map((value,i)=>value===key?
    `<span class="pick-tag slot-${i+1}">${i===0?'J1':mode==='solo'?'CPU':'J2'}</span>`:'').join('');
   return `<button class="fighter-card${labels?' fighter-picked':''}" data-char="${key}">
-   <span class="fighter-avatar" aria-hidden="true"></span>
+   <span class="fighter-avatar${key==='kingbum'?' king-avatar':''}" aria-hidden="true"></span>
    <span class="fighter-name">${fighterProfileName(FIGHTERS[key])}</span>
    <span class="fighter-stats">${FIGHTERS[key].role} · ${FIGHTERS[key].hp} PV</span>
    <span class="pick-tags">${labels}</span>

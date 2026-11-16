@@ -61,7 +61,9 @@ function drawFighter(f,t){const current=f.action;let st=current;
   ctx.translate(0,shoulder);
  }
  ctx.scale(f.dir,1);if(f.hitFlash>0)ctx.filter='brightness(1.12)';ctx.imageSmoothingEnabled=false;
- if(drawMovementPose(f)){
+ if(f.key==='kingbum'){
+  drawKingBum(f);
+ }else if(drawMovementPose(f)){
   // O movimento tem sua própria sequência.
  }else if(typeof drawRevisionFighter==='function'&&drawRevisionFighter(f,t)){
   // Reviewed revision sprites take precedence over legacy poses.
@@ -239,6 +241,11 @@ function drawFX(t,foreground=false){for(const v of visualFX){if(foreground!==(v.
  case 'inflate':ctx.fillStyle=rgba(c,.24);ctx.beginPath();ctx.ellipse(v.x,v.y,82+q*22,80+q*14,0,0,7);ctx.fill();break;
  case 'stretch':ctx.strokeStyle=c;ctx.lineWidth=23;ctx.beginPath();ctx.moveTo(v.x,v.y);ctx.lineTo(v.x+v.dir*260*q,v.y);ctx.stroke();break;
  case 'stomp':{ctx.strokeStyle=c;ctx.lineWidth=12;ctx.beginPath();ctx.ellipse(v.x,FLOOR-8,v.radius*q,31,0,0,7);ctx.stroke();break;}
+ case 'kingBread':{
+  const x=Math.round(v.x+v.direction*q*76),y=Math.round(v.y+q*q*138);
+  rect(x-12,y-7,24,14,'#553120');rect(x-9,y-7,18,11,c);rect(x-5,y-5,10,4,'#ffe0a1');
+  break;
+ }
  case 'heal':ctx.strokeStyle=c;ctx.lineWidth=7;ctx.beginPath();ctx.arc(v.x,v.y,v.radius*(1+q),0,7);ctx.stroke();break;
  case 'ancestor':{ctx.strokeStyle=c;ctx.lineWidth=5;for(let j=-1;j<=1;j++){let xx=v.x+j*65;ctx.beginPath();ctx.arc(xx,v.y-25,16,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(xx,v.y-8);ctx.lineTo(xx,v.y+45);ctx.stroke();}break;}
  case 'lightning':{ctx.strokeStyle=c;ctx.lineWidth=8;for(let j=0;j<7;j++){ctx.beginPath();let x=v.x+(j-3)*42;ctx.moveTo(x,-15);for(let y=24;y<v.y+130;y+=45)ctx.lineTo(x+Math.sin(y+j*8+t*23)*25,y);ctx.stroke();}break;}
@@ -290,6 +297,7 @@ function drawFX(t,foreground=false){for(const v of visualFX){if(foreground!==(v.
  }ctx.restore();}}
 // Emblemas em pixel art: estrela, cogumelo, mola, coroa, garra e pneu.
 const fighterEmblems={
+ kingbum:['1010101','1111111','0111110','0111110','0111110','0111110','0000000'],
  chapinha:['0001000','0001000','1111111','0111110','0011100','0110110','0100010'],
  pitufo:['0011100','0111110','1111111','1111111','0011100','0011100','0111110'],
  gaga:['1111100','0000110','0111100','1100000','0111100','0000110','0011100'],

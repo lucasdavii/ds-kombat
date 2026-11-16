@@ -6,8 +6,10 @@ function updatePower(f,dt){
  const move=f.powerMove;
  if(!move)return;
  if(f.action!==move.pose){f.powerMove=null;return;}
+ const previous=move.elapsed;
  move.elapsed+=dt;
- if(!move.fired&&move.elapsed>=move.contact){
+ if(f.key==='kingbum')advanceKingPower(f,move,previous);
+ if(!move.fired&&move.elapsed+1e-9>=move.contact){
   move.fired=true;
   if(move.slot===2)resolveUltimate(f);
   else resolveSpecial(f,move.slot);
@@ -48,7 +50,8 @@ function hit(source,target,damage,knock=15,range=Infinity,contactX=source.x,dire
   amount*=Math.max(.35,1-(chain-1)*.15);
   const slamArmor=(target.key==='chapinha'||target.key==='gaga')&&target.action==='special'&&
    target.pendingGroundPunch&&!target.grounded&&type!=='throw';
-  if(!slamArmor){
+  if(!slamArmor&&!kingArmored(target,damage,type,impact)){
+   dropKingBread(target);
    target.stun=(type==='normal'?source.basicMove?.hitstun||24:30)/60;target.action='hit';target.actionTime=target.stun;target.comboTimer=target.stun;target.hitPoseDuration=target.stun;
    target.pendingStrike=false;target.powerMove=null;target.dashTime=0;target.pendingGroundPunch=false;target.dashHitPending=false;
    applyPushback(source,target,direction,knock);
@@ -58,11 +61,12 @@ function hit(source,target,damage,knock=15,range=Infinity,contactX=source.x,dire
     target.vy=-530;
     target.airVX=direction*85;
     target.fallOnLanding=true;
-   }else if(chain>=COMBAT.comboLimit||type==='throw'){knockdown(target,type==='throw');}
+   }else if(impact.knockdown||chain>=COMBAT.comboLimit||type==='throw'){knockdown(target,type==='throw');}
   }
   fx('contact',impact.x,impact.y,'#fff0bd',.18,damage>=15?54:39);target.hitFlash=.12;
  }
  target.hp=game.reviewSession&&training.enabled&&training.health?target.maxHp:clamp(target.hp-amount,0,target.maxHp);energy(source,blocked?3:8);energy(target,blocked?3:6);
+ if(!blocked)impact.onHit?.();
  spawnParticle(impact.x,impact.y,blocked?'#79caff':source.c.accent,blocked?5:10,180);
  sound(blocked?210:type==='normal'?110:85,.07,blocked?'triangle':'sawtooth',.035);
  game.screenShake=blocked?2:Math.min(10,3+damage*.15);
@@ -117,6 +121,7 @@ function startGrab(f,target,basic=false){
  if(!f.grounded||!target.grounded||target.stun>0||target.invincible>0||Math.abs(target.x-f.x)>(basic?96:148)||target.grabbedBy||target.grab)return false;
  f.dir=target.x>=f.x?1:-1;
  f.grab={target,clock:0,dir:f.dir,startX:target.x,basic};f.action='grab';f.actionTime=.85;f.powerMove=null;
+ dropKingBread(target);
  target.grabbedBy=f;target.action='grabbed';target.actionTime=.85;target.pendingStrike=false;target.powerMove=null;target.block=false;
  return true;
 }
@@ -178,13 +183,19 @@ function boxesOverlap(a,b){
 function strikeBox(f){
  const move=f.basicMove,size=f.c.size;
  let reach=move.range,top,bottom;
- if(!move.launch&&f.attackKind==='punch'){
+ if(f.key==='kingbum'){
+  const [measuredReach,low,high]=kingStrikeProfile(f);
+  reach=measuredReach;
+  top=f.y-high;
+  bottom=f.y-low;
+ }else if(!move.launch&&f.attackKind==='punch'){
   const [measuredReach,low,high]=PUNCH_CONTACT[f.key][f.attackStance];
   reach=measuredReach;
   top=f.y-high;
   bottom=f.y-low;
  }else{
-  const center=f.y-size*(move.launch?.79:f.attackStance==='low'?.18:f.attackStance==='air'?.30:.56);
+  const height=move.launch?.79:f.attackStance==='low'?.18:f.attackStance==='air'?.30:.56;
+  const center=f.y-size*height;
   const halfHeight=size*(move.launch?.075:.105);
   top=center-halfHeight;
   bottom=center+halfHeight;
@@ -264,6 +275,7 @@ function resolveSpecial(f,slot){
   else projectile(f,'tire',{...offset,radius:56,speed:420,life:2.4,color:'#ff8e40'});
   break;
  }
+ case 'kingbum':resolveKingSpecial(f,enemy,slot);break;
  case 'mucutuba':
   if(slot===0){
    projectile(f,'ancestor',{radius:48,damage:data.damage,speed:480,color:'#75ff51'});
@@ -287,6 +299,7 @@ function ultimate(f){if(!canAttack(f)||f.energy<100)return;const data=f.c.powers
 function resolveUltimate(f){
  const data=f.c.powers[2];const enemy=game.f[1-f.player];
  switch(f.key){
+ case 'kingbum':resolveKingUltimate(f,enemy);break;
  case 'chapinha':f.buffTimer=15;f.damageBuff=15;fx('burst',f.x,f.y-120,'#ff3243',1.1,110);break;
  case 'gaga':f.buffTimer=15;f.damageBuff=15;fx('burst',f.x,f.y-120,'#b45fff',1.2,115);break;
  case 'dino':if(f.powerMove)f.powerMove.stompX=enemy.x;fx('stomp',enemy.x,FLOOR-15,'#b7ff59',1.05,260);hit(f,enemy,data.damage,data.knock,data.range);game.screenShake=18;break;
