@@ -116,9 +116,9 @@ function drawPajeStrikeFlames(f,atlas,frame,scale){
  if(atlas!=='powers'||!f.powerMove)return;
  const clock=f.powerMove.elapsed;
  if(frame===1){
-  for(let i=0;i<4;i++)drawPajeFlame(-18-i*9,-3,clock+i*.08,scale,1-i*.17);
+  drawPajeSparkStep(clock,scale,false);
  }else if(frame===2){
-  drawPajeFlame(34,-35,clock,scale,.8);
+  drawPajeSparkStep(clock,scale,true);
  }else if(frame===5){
   drawPajeFlame(-12,-39,clock,scale,.65);
  }else if(frame===6){
@@ -140,6 +140,30 @@ function drawPajeFlame(x,y,clock,scale,strength){
    ctx.fillRect(-width/2+tongue*width/3,-5-rise,
     Math.max(2,width/3),rise);
   }
+ }
+ ctx.restore();
+}
+
+function drawPajeSparkStep(clock,scale,kicking){
+ const tick=Math.floor(clock*24);
+ ctx.save();
+ ctx.scale(scale,scale);
+ if(kicking){
+  poly([[25,-48],[32,-48],[39,-43],[43,-36],[41,-29],[35,-25],[29,-26],[35,-30],[37,-36],[34,-41],[25,-44]],'#e44818');
+  poly([[29,-46],[34,-44],[39,-38],[40,-33],[36,-29],[38,-35],[34,-41],[29,-42]],'#ff9c22');
+  poly([[34,-41],[38,-37],[38,-33],[36,-35]],'#fff1a0');
+ }else{
+  const flutter=[0,3,-2,1][tick%4];
+  poly([[-9,-2],[-17,-11],[-24,-15],[-22,-9],[-35,-14-flutter],[-31,-8],[-49,-11],[-42,-5],[-59,-6],[-48,-1],[-30,1],[-17,1]],'#d73b17');
+  poly([[-12,-2],[-20,-8],[-28,-9],[-24,-5],[-38,-8-flutter],[-34,-3],[-49,-4],[-40,-1],[-22,0]],'#ff8720');
+  poly([[-14,-2],[-21,-5],[-28,-4],[-25,-2],[-37,-3],[-31,-1],[-21,0]],'#ffe386');
+ }
+ for(let i=0;i<7;i++){
+  const age=(tick+i*3)%11;
+  const x=(kicking?26:-24)-i*5-age*2;
+  const y=(kicking?-34:-4)-(i%3)*4-age;
+  const size=age<5?2:1;
+  rect(x,y,size,size,age<5?'#ffd65b':'#f56a1c');
  }
  ctx.restore();
 }
