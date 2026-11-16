@@ -15,7 +15,7 @@ function renderBackdrop(t){if(court.naturalWidth){ctx.imageSmoothingEnabled=fals
  rect(0,FLOOR,W,H-FLOOR,'#1e1a26');rect(0,FLOOR-7,W,7,'#e25464');rect(0,FLOOR+12,W,3,'#583b48');for(let i=0;i<14;i++){let yy=FLOOR+20+i*i*0.7;rect(0,yy,W,1,i%2?'#3b303a':'#2d2630');}for(let x=-180;x<W+300;x+=155){ctx.strokeStyle='#37333a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(640+(x-640)*.45,FLOOR);ctx.lineTo(x,H);ctx.stroke();}
  // Luzes e banners no topo
  rect(0,0,W,16,'#07070c');rect(0,24,W,3,'#5b2c44');for(let i=0;i<7;i++){const x=105+i*180;ctx.globalAlpha=.15+.07*Math.sin(t*2+i);const rg=ctx.createRadialGradient(x,90,4,x,260,175);rg.addColorStop(0,i%2?'#ad78ff':'#ff7196');rg.addColorStop(1,'#ff719600');rect(x-160,80,320,360,rg);ctx.globalAlpha=1;rect(x-4,46,8,12,'#ffebbb');}
- pixelText('RUA FIGHTERS',639,396,95,'#211725','center',8);
+ pixelText('DS KOMBAT',639,396,95,'#211725','center',8);
 }
 function drawFighterShadow(f) {
  const lift = clamp((FLOOR - f.y) / 210, 0, 1);
