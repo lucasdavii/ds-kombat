@@ -63,6 +63,8 @@ function drawFighter(f,t){const current=f.action;let st=current;
  ctx.scale(f.dir,1);if(f.hitFlash>0)ctx.filter='brightness(1.12)';ctx.imageSmoothingEnabled=false;
  if(f.key==='kingbum'){
   drawKingBum(f);
+ }else if(f.key==='paje'){
+  drawPaje(f,t);
  }else if(drawMovementPose(f)){
   // O movimento tem sua própria sequência.
  }else if(typeof drawRevisionFighter==='function'&&drawRevisionFighter(f,t)){
@@ -241,6 +243,10 @@ function drawFX(t,foreground=false){for(const v of visualFX){if(foreground!==(v.
  case 'inflate':ctx.fillStyle=rgba(c,.24);ctx.beginPath();ctx.ellipse(v.x,v.y,82+q*22,80+q*14,0,0,7);ctx.fill();break;
  case 'stretch':ctx.strokeStyle=c;ctx.lineWidth=23;ctx.beginPath();ctx.moveTo(v.x,v.y);ctx.lineTo(v.x+v.dir*260*q,v.y);ctx.stroke();break;
  case 'stomp':{ctx.strokeStyle=c;ctx.lineWidth=12;ctx.beginPath();ctx.ellipse(v.x,FLOOR-8,v.radius*q,31,0,0,7);ctx.stroke();break;}
+ case 'pajePillar':
+  ctx.globalAlpha=1;
+  drawPajeFire(4+Math.min(3,Math.floor(q*4)),v.x,v.y,5);
+  break;
  case 'kingBread':{
   const x=Math.round(v.x+v.direction*q*76),y=Math.round(v.y+q*q*138);
   rect(x-12,y-7,24,14,'#553120');rect(x-9,y-7,18,11,c);rect(x-5,y-5,10,4,'#ffe0a1');

@@ -1,0 +1,108 @@
+'use strict';
+
+const pajeAssets=Object.fromEntries(['movement','combat','powers','results','fire'].map(
+ name=>[name,imageAsset('assets/fighters/paje-'+name+'.png')]));
+const pajeLiftTime=9/60;
+const pajeBlastTime=22/60;
+
+function advancePajePower(f,move,previous){
+ const start=(move.slot===0?5:11)/60;
+ if(move.slot!==1){
+  const advance=Math.max(0,Math.min(move.elapsed,move.contact)-Math.max(previous,start));
+  f.x=clamp(f.x+f.dir*advance*(move.slot===0?620:490),55,W-55);
+ }
+ const target=move.confirmed;
+ if(!target||target.action!=='hit'||target.stun<=0)return;
+ const since=move.elapsed-move.contact;
+ if(since>=pajeBlastTime&&move.lifted&&!move.blast){
+  move.blast=true;
+  hit(f,target,23,52,Infinity,f.x,f.dir,'high','special',{
+   x:target.x,y:target.y-target.c.size*.45,knockdown:true,
+   onHit:()=>fx('pajePillar',target.x,FLOOR,'#ff963a',.43),
+  });
+ }else if(since>=pajeLiftTime&&!move.lifted){
+  move.lifted=true;
+  hit(f,target,14,0,Infinity,f.x,f.dir,'high','special',{
+   x:target.x,y:target.y-target.c.size*.55,launch:true,
+  });
+ }
+}
+
+function resolvePajePower(f,target,slot){
+ const data=f.c.powers[slot],move=f.powerMove;
+ const tip=f.x+f.dir*data.range;
+ const box=hurtbox(target);
+ if(!boxesOverlap({left:Math.min(f.x,tip),right:Math.max(f.x,tip),
+  top:f.y-f.c.size*.73,bottom:f.y-f.c.size*(slot===0?.19:.39)},box))return;
+ hit(f,target,data.damage,data.knock,Infinity,f.x,f.dir,'high','special',{
+  x:f.dir>0?box.left:box.right,y:f.y-f.c.size*(slot===0?.38:.58),
+  onHit:point=>{
+   if(slot===2&&f.powerMove===move)move.confirmed=target;
+   fx('burst',point.x,point.y,'#ff9d48',.19,slot===1?90:52);
+  },
+ });
+}
+
+function pajePowerFrame(move){
+ const since=move.elapsed-move.contact;
+ if(move.slot===0)return move.elapsed<5/60?0:since<0?1:since<.09?2:3;
+ if(move.slot===1)return move.elapsed<.13?4:since<0?5:since<.10?6:7;
+ if(move.elapsed<.10)return 8;
+ if(move.elapsed<11/60)return 9;
+ if(since<0)return 10;
+ if(since<.09)return 11;
+ if(!move.confirmed)return 15;
+ if(since<.14)return 9;
+ if(since<.25)return 12;
+ return move.blast?14:13;
+}
+
+function pajePose(f,t){
+ if(game.roundOver){
+  const elapsed=2.45-game.resultTime;
+  if(f.hp<=0)return ['results',elapsed<.16?14:6];
+  return ['results',game.winner===f.player?(elapsed<.38?2:elapsed<1.05?3:4):5];
+ }
+ if(f.grabbedBy)return ['results',f.grounded?12:13];
+ if(f.grab)return ['results',15];
+ if(f.powerMove)return ['powers',pajePowerFrame(f.powerMove)];
+ switch(f.action){
+  case 'down':return ['results',f.knockdownLanded?6:14];
+  case 'wakeup':return ['results',f.actionTime>.16&&f.rollDirection?7:f.actionTime>.08?8:9];
+  case 'hit':return f.grounded?['combat',f.actionTime>.17?3:2]:['results',13];
+  case 'escape':return ['results',f.actionTime>.11?10:11];
+  case 'throwRecovery':return ['results',15];
+  case 'guard':
+  case 'blockstun':return ['combat',f.lowGuard?1:0];
+  case 'crouch':return ['movement',12];
+  case 'land':return ['movement',15];
+  case 'jump':return ['movement',f.vy<-690?13:14];
+  case 'quickStep':return ['movement',8+Math.floor(t*18)%4];
+  case 'walk':return ['movement',4+Math.floor(f.walkClock*10)%4];
+  case 'attack':{
+   const {active,step}=attackTimeline(f);
+   const kick=f.attackKind==='kick';
+   if(f.attackStance==='low')return ['combat',active?(kick?11:7):1];
+   return ['combat',(kick?8:4)+(active?1:step>=2?2:0)];
+  }
+  default:return game.phase==='intro'?['results',Math.floor(t*3)%2]:['movement',Math.floor(t*7)%4];
+ }
+}
+
+function drawPajeFire(frame,x,y,scale){
+ const image=pajeAssets.fire;
+ if(!image.naturalWidth)return;
+ ctx.drawImage(image,frame%4*96,Math.floor(frame/4)*112,96,112,
+  x-48*scale,y-108*scale,96*scale,112*scale);
+}
+
+function drawPaje(f,t){
+ const [atlas,frame]=pajePose(f,t);
+ const image=pajeAssets[atlas],scale=f.c.size/62;
+ if(!image.naturalWidth)return;
+ if(atlas==='powers'&&frame>=9&&frame<=14){
+  drawPajeFire(Math.floor(f.powerMove.elapsed*15)%4,0,0,scale*1.16);
+ }
+ ctx.drawImage(image,frame%4*96,Math.floor(frame/4)*84,96,84,
+  -48*scale,-78*scale,96*scale,84*scale);
+}
