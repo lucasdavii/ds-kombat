@@ -1,5 +1,5 @@
 FIGHTERS.kingbum={
- name:'KING BUM',subtitle:'O REI DA FOME',accent:'#e0af59',
+ name:'PAPATEU',subtitle:'O REI DA FOME',accent:'#e0af59',
  hp:139,speed:241,guard:120,size:255,atk:1,role:'Tanque',
  specials:[
   ['ABRE ESPAÇO','Ombrada curta. Aguenta um golpe leve durante o avanço.'],
