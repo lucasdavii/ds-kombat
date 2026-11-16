@@ -176,13 +176,21 @@ function boxesOverlap(a,b){
  return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
 }
 function strikeBox(f){
- const m=f.basicMove, height=f.c.size;
- const kick=f.attackKind==='kick';
- const center=f.y-height*(m.launch?.79:f.attackStance==='low'?(kick?.18:.40):
-  f.attackStance==='air'?(kick?.30:.48):kick?.56:.65);
- const halfHeight=height*(kick?.105:.075);
- const start=f.x+f.dir*height*.06,end=f.x+f.dir*m.range;
- return {left:Math.min(start,end),right:Math.max(start,end),top:center-halfHeight,bottom:center+halfHeight};
+ const move=f.basicMove,size=f.c.size;
+ let reach=move.range,top,bottom;
+ if(!move.launch&&f.attackKind==='punch'){
+  const [measuredReach,low,high]=PUNCH_CONTACT[f.key][f.attackStance];
+  reach=measuredReach;
+  top=f.y-high;
+  bottom=f.y-low;
+ }else{
+  const center=f.y-size*(move.launch?.79:f.attackStance==='low'?.18:f.attackStance==='air'?.30:.56);
+  const halfHeight=size*(move.launch?.075:.105);
+  top=center-halfHeight;
+  bottom=center+halfHeight;
+ }
+ const start=f.x+f.dir*size*.06,end=f.x+f.dir*reach;
+ return {left:Math.min(start,end),right:Math.max(start,end),top,bottom};
 }
 function resolveBasicStrike(f,target){
  const a=strikeBox(f),b=hurtbox(target);
