@@ -11,8 +11,8 @@ FIGHTERS.neneu={
  ],
  ultimate:'SOLTA A MATILHA',
  powers:[
-  {startup:14,duration:30,damage:9,cooldown:240},
-  {startup:16,duration:32,damage:13,cooldown:300},
+  {startup:14,duration:30,damage:10,cooldown:240},
+  {startup:16,duration:32,damage:14,cooldown:300},
   {startup:18,duration:92,damage:10,meterCost:100,invulnerability:0},
  ],
 };
