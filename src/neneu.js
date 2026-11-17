@@ -9,7 +9,8 @@ function summonNeneuDog(f,slot){
   dir:f.dir,x,y:FLOOR,life:ultimate?.58:slot===0?.8:1.1,age:0,
   phase:slot===1?'guard':'run',color:slot===1?'#ed635b':'#edba65',
   combo:ultimate?f.powerMove:null,damage:f.c.powers[slot].damage});
- fx('burst',x,FLOOR-26,f.c.accent,.23,47);
+ fx('burst',x,FLOOR-26,f.c.accent,ultimate?.39:.23,ultimate?88:47);
+ if(ultimate)fx('shock',f.x,FLOOR,'#ffd28c',.38,125);
  sound(slot===1?175:790,.13,slot===1?'triangle':'sine',.05);
 }
 
@@ -39,22 +40,21 @@ function updateNeneuDog(dog,dt){
  if(!boxesOverlap(dogBox,hurtbox(target)))return false;
  const point={x:nose,y:FLOOR-(brutus?51:33),
   onHit:()=>{
-   fx('burst',nose,point.y,dog.color,.23,brutus?80:53);
+   fx('burst',nose,point.y,dog.color,dog.combo?.34:.23,dog.combo?105:brutus?80:53);
    if(dog.combo)dog.combo.neneuCombo={target,started:dog.combo.elapsed,stage:0,dir:dog.dir};
   },
   onBlock:()=>fx('burst',nose,point.y,'#9ae7ff',.14,38),
  };
  if(hit(f,target,dog.damage,brutus?67:dog.combo?3:18,Infinity,previous,dog.dir,
   brutus?'mid':'low','special',point)){
-  if(dog.combo)return true;
-  dog.life=.27;dog.phase='exit';
+  dog.life=dog.combo?.18:.27;dog.phase='exit';
  }
  return false;
 }
 
 function advanceNeneuPower(f,move){
  const combo=move.neneuCombo;
- if(!combo)return;
+ if(!combo||combo.stage===2)return;
  const {target,dir}=combo;
  const elapsed=move.elapsed-combo.started;
  if(target.action!=='hit'||target.stun<=0){move.neneuCombo=null;return;}
@@ -65,7 +65,10 @@ function advanceNeneuPower(f,move){
    life:.25,age:.11,phase:'exit',color:'#ed635b',combo:move});
   hit(f,target,12,34,Infinity,x,-dir,'mid','special',{
    x:target.x,y:target.y-52,
-   onHit:()=>fx('shock',target.x,FLOOR,'#ed635b',.25,83),
+   onHit:()=>{
+    fx('shock',target.x,FLOOR,'#ed635b',.34,125);
+    fx('burst',target.x,target.y-52,'#ff8e63',.26,100);
+   },
   });
  }
  if(combo.stage===1&&elapsed>=.42){
@@ -73,7 +76,11 @@ function advanceNeneuPower(f,move){
   f.x=clamp(target.x-dir*120,55,W-55);
   hit(f,target,19,62,150,f.x,dir,'high','special',{
    x:target.x,y:target.y-95,knockdown:true,
-   onHit:()=>fx('burst',target.x,target.y-95,'#ffd28c',.31,112),
+   onHit:()=>{
+    fx('burst',target.x,target.y-95,'#ffd28c',.38,150);
+    fx('shock',target.x,FLOOR,'#ffaa64',.42,150);
+    spawnParticle(target.x,target.y-95,'#ffdfaa',16,240);
+   },
   });
  }
 }
@@ -149,6 +156,7 @@ function drawNeneuDog(dog){
  const frame=dog.phase==='exit'?(dog.combo&&brutus&&dog.life>.13?13:brutus?15:7):
   brutus?(dog.phase==='guard'?10:dog.age<.11?11:12+Math.floor(dog.age*20)%2):
   dog.age<.08?1:stride;
- drawNeneuFrame('dogs',frame,2.7);
+ const size=brutus?3.65:3.45;
+ drawNeneuFrame('dogs',frame,size*(dog.combo?1.12:1));
  ctx.restore();
 }
