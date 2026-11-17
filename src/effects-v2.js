@@ -41,22 +41,22 @@ function drawFittedAura(f,t,x,feet,colors){
   const opacity=ctx.globalAlpha;
   const low=f.action==='crouch'||(f.action==='guard'&&f.lowGuard);
   const height=f.c.size*(f.action==='down'?.48:low?.87:1.22);
-  const width=f.c.size*(f.action==='down'?.78:.53);
+  const width=f.c.size*(f.action==='down'?.92:.72);
   
   const phase=Math.floor(t*20)*Math.PI*2/5;
   ctx.save();
   for(let y=0;y<height;y+=4){
    const u=y/height;
-   const spread=width*(1-.82*u)*(.93+.07*Math.cos(u*25+phase));
+   const spread=width*(1-.82*Math.pow(u,1.35))*(.93+.07*Math.cos(u*25+phase));
    
    const edge=8+4*Math.sin(u*21+phase);
    ctx.globalAlpha=opacity*.65;
-   rect(Math.round(x-spread),Math.round(feet-y),Math.round(spread*2),4,colors[0]);
+   rect(Math.round(x-spread),Math.round(feet+8-y),Math.round(spread*2),4,colors[0]);
    ctx.globalAlpha=opacity*.96;
    for(const side of [-1,1]){
     const border=Math.round(x+(side<0?-spread:spread-edge));
-    rect(border,Math.round(feet-y),Math.round(edge),4,colors[1]);
-    if(Math.sin(u*36+phase+side)>0)rect(border+3,Math.round(feet-y),3,4,colors[2]);
+    rect(border,Math.round(feet+8-y),Math.round(edge),4,colors[1]);
+    if(Math.sin(u*36+phase+side)>0)rect(border+3,Math.round(feet+8-y),3,4,colors[2]);
    }
   }
   if(f.key==='paje'){
@@ -68,9 +68,9 @@ function drawFittedAura(f,t,x,feet,colors){
      const u=y/tip;
      const x0=x+n*width*.24*(1-u*.48)+Math.sin(u*7+phase+n)*width*.10*u;
      const w=Math.max(4,width*.31*(1-u));
-     rect(Math.round(x0-w/2),Math.round(feet-y),Math.round(w),4,'#d63313');
-     if(w>8)rect(Math.round(x0-w*.32),Math.round(feet-y),Math.round(w*.64),4,'#ff7518');
-     if(u<.58&&w>10)rect(Math.round(x0-w*.13),Math.round(feet-y),Math.round(w*.26),4,'#fff09a');
+     rect(Math.round(x0-w/2),Math.round(feet+8-y),Math.round(w),4,'#d63313');
+     if(w>8)rect(Math.round(x0-w*.32),Math.round(feet+8-y),Math.round(w*.64),4,'#ff7518');
+     if(u<.58&&w>10)rect(Math.round(x0-w*.13),Math.round(feet+8-y),Math.round(w*.26),4,'#fff09a');
     }
    }
   }
