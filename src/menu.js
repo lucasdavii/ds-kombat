@@ -42,6 +42,12 @@ function showArenaSelection(){
   <div class="buttons">${btn('VOLTAR','fighters','ghost')}${btn('⚄ ALEATÓRIO','arena-random','secondary')}</div>
  </div>`);
 }
+function selectionPortrait(key){
+ if(key==='kingbum')return '<span class="selection-portrait fighter-avatar king-avatar" aria-hidden="true"></span>';
+ const file={pitufo:'pitufo_idle_palette',paje:'paje-avatar',neneu:'neneu-avatar'}[key]??key+'_idle';
+ return `<img class="selection-portrait" src="assets/fighters/${file}.png" alt="">`;
+}
+
 function showSelection(){
  screen='select';
  setStatus(mode==='solo'?'VS CPU':'DUELO LOCAL');
@@ -51,14 +57,14 @@ function showSelection(){
   <button class="match-slot slot-${i+1} ${selectFocus===i?'slot-active':''}"
    data-action="slot-${i}" aria-pressed="${selectFocus===i}">
    <span>${sides[i]}</span>
-   ${key?`<span class="fighter-avatar${key==='kingbum'?' king-avatar':key==='paje'?' paje-avatar':key==='neneu'?' neneu-avatar':''}" data-preview="${key}" aria-hidden="true"></span>`:''}
+   ${key?selectionPortrait(key):''}
    <strong>${key?fighterProfileName(FIGHTERS[key]):'Escolher lutador'}</strong>
   </button>`);
  const roster=CHARS.map(key=>{
   const labels=selected.map((value,i)=>value===key?
    `<span class="pick-tag slot-${i+1}">${i===0?'J1':mode==='solo'?'CPU':'J2'}</span>`:'').join('');
   return `<button class="fighter-card${labels?' fighter-picked':''}" data-char="${key}">
-   <span class="fighter-avatar${key==='kingbum'?' king-avatar':key==='paje'?' paje-avatar':key==='neneu'?' neneu-avatar':''}" aria-hidden="true"></span>
+   ${selectionPortrait(key)}
    <span class="fighter-name">${fighterProfileName(FIGHTERS[key])}</span>
    <span class="fighter-stats">${FIGHTERS[key].role} · ${FIGHTERS[key].hp} PV</span>
    <span class="pick-tags">${labels}</span>

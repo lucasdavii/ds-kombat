@@ -224,3 +224,19 @@
 .arena-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
 .arena-card strong{display:block;padding:4px;font-size:clamp(9px,1.4vw,15px)}
 @media(max-width:560px){.kombat-select .roster-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Keep both selection screens inside the game panel. */
+.kombat-select,.arena-selection{padding:4px}
+.kombat-select .matchup{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
+.kombat-select .match-slot{justify-items:center;text-align:center;overflow-wrap:anywhere}
+.selection-portrait{display:block;width:48px;height:48px;object-fit:contain;image-rendering:pixelated}
+.kombat-select .match-slot .selection-portrait{width:64px;height:64px}
+.kombat-select .fighter-card{clip-path:none;justify-content:center;gap:2px}
+.kombat-select .fighter-name{max-width:100%;overflow-wrap:anywhere}
+.kombat-select .select-actions .buttons,.arena-selection .buttons{display:flex;flex-wrap:wrap;gap:8px;padding:3px 4px 6px}
+.arena-card img{height:auto}
+@media(max-width:560px){
+ .kombat-select .screen-heading,.arena-selection .screen-heading{font-size:21px;margin-bottom:6px}
+ .kombat-select .match-slot .selection-portrait,.selection-portrait{width:36px;height:36px}
+ .arena-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
