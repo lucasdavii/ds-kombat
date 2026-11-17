@@ -47,7 +47,7 @@ function drawFittedAura(f,t,x,feet,colors){
   ctx.save();
   for(let y=0;y<height;y+=4){
    const u=y/height;
-   const spread=width*(.36+.64*Math.sin(u*Math.PI))*(1+.11*Math.sin(u*28+phase));
+   const spread=width*(1-.82*u)*(.93+.07*Math.cos(u*25+phase));
    
    const edge=8+4*Math.sin(u*21+phase);
    ctx.globalAlpha=opacity*.65;
@@ -57,6 +57,21 @@ function drawFittedAura(f,t,x,feet,colors){
     const border=Math.round(x+(side<0?-spread:spread-edge));
     rect(border,Math.round(feet-y),Math.round(edge),4,colors[1]);
     if(Math.sin(u*36+phase+side)>0)rect(border+3,Math.round(feet-y),3,4,colors[2]);
+   }
+  }
+  if(f.key==='paje'){
+   // Separate tapered tongues rise around the solid back layer.
+   ctx.globalAlpha=opacity;
+   for(let n=-4;n<=4;n++){
+    const tip=height*(.58+.31*(1-Math.abs(n)/5)+.12*Math.sin(phase+n*2));
+    for(let y=0;y<tip;y+=4){
+     const u=y/tip;
+     const x0=x+n*width*.24*(1-u*.48)+Math.sin(u*7+phase+n)*width*.10*u;
+     const w=Math.max(4,width*.31*(1-u));
+     rect(Math.round(x0-w/2),Math.round(feet-y),Math.round(w),4,'#d63313');
+     if(w>8)rect(Math.round(x0-w*.32),Math.round(feet-y),Math.round(w*.64),4,'#ff7518');
+     if(u<.58&&w>10)rect(Math.round(x0-w*.13),Math.round(feet-y),Math.round(w*.26),4,'#fff09a');
+    }
    }
   }
   ctx.restore();
