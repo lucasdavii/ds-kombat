@@ -11,6 +11,8 @@ function stopSounds(){for(const osc of voices){try{osc.stop();}catch(_){}}voices
 function sound(freq=180,dur=.08,type='square',volume=.045){if(!soundOn||!audioUnlocked||voices.size>=8)return;try{const now=audio.currentTime;const osc=audio.createOscillator(),gain=audio.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,now);osc.frequency.exponentialRampToValueAtTime(Math.max(40,freq*.6),now+dur);gain.gain.setValueAtTime(volume*soundVolume,now);gain.gain.exponentialRampToValueAtTime(.0001,now+dur);osc.connect(gain);gain.connect(audio.destination);voices.add(osc);osc.onended=()=>{voices.delete(osc);osc.disconnect();gain.disconnect();};osc.start(now);osc.stop(now+dur+.01)}catch(_){}}
 
 // Keep outgoing tracks alive until their fade has finished.
+// Cue points measured from the published files (in seconds).
+const soundtrackCue = { select: .56, fight: 1.47, victory: 3.18 };
 const soundtrack = new Map();
 let previousMusicFrame;
 function mixSoundtrack(now){
@@ -25,7 +27,17 @@ function mixSoundtrack(now){
   screen==='pause'?null:'menu';
  if(scene&&!soundtrack.has(scene)){
   const track=new Audio('assets/music/'+scene+'.ogg');
+  const cue=soundtrackCue[scene]??0;
   track.loop=scene!=='victory';
+  if(cue){
+   track.loop=false;
+   const seekToCue=()=>{track.currentTime=cue;};
+   track.addEventListener('loadedmetadata',seekToCue,{once:true});
+   if(scene!=='victory')track.addEventListener('ended',()=>{
+    seekToCue();
+    if(soundOn&&!document.hidden&&screen!=='pause')track.play().catch(()=>{});
+   });
+  }
   track.volume=0;
   soundtrack.set(scene,{track,level:0,starting:false});
  }
@@ -33,7 +45,7 @@ function mixSoundtrack(now){
   const {track}=entry;
   const selected=name===scene;
   const wanted=selected&&soundOn&&!document.hidden;
-  if(wanted&&track.paused&&!track.ended&&!entry.starting){
+  if(wanted&&track.readyState>=1&&track.paused&&!track.ended&&!entry.starting){
    entry.starting=true;
    track.play().catch(()=>{}).finally(()=>{entry.starting=false;});
   }
