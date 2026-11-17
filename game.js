@@ -1,6 +1,7 @@
 'use strict';
 
 // Ponto de entrada. O index.html carrega os scripts de src/ antes daqui.
+setupMobile();
 showHome();
 requestAnimationFrame(gameLoop);
 

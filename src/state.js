@@ -14,9 +14,9 @@ function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}function rnd(a,b){re
 function rgba(hex,alpha){const s=hex.replace('#','');const n=parseInt(s,16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${alpha})`}
 
 const query=new URLSearchParams(window.location?.search||'');
-const review=query.has('revisao')||query.has('treino');
+const review=!mobileMode&&(query.has('revisao')||query.has('treino'));
 let debugBoxes=false;
-const training={enabled:query.has('treino'),health:false,meter:false,dummy:'idle'};
+const training={enabled:!mobileMode&&query.has('treino'),health:false,meter:false,dummy:'idle'};
 let reviewPaused=false,reviewSpeed=1,reviewClock=0,reviewAnchors=false;
 const FIXED_STEP=1/COMBAT.fps;
 let accumulator=0;

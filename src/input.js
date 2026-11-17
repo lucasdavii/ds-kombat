@@ -7,7 +7,7 @@ const KEYMAP=[{left:'a',right:'d',up:'w',down:'s',punch:'f',kick:'g',block:'h',s
 const keys=new Set(),padsPrev=[{},{}];
 
 function clearInputs(){
- keys.clear();for(let i=0;i<2;i++)padsPrev[i]={};
+ clearTouchInputs();keys.clear();for(let i=0;i<2;i++)padsPrev[i]={};
  if(game)for(const f of game.f){f.prev={};f.inputBuffer={};f.motion=[];f.directionTaps={};f.aiPlan=null;f.aiPending=null;f.aiDecision=0;f.block=false;}
 }
 
@@ -36,6 +36,7 @@ function getGamepads(){
  return assigned;
 }
 function readInput(player,pads){const km=KEYMAP[player],obj={};Object.keys(km).forEach(k=>obj[k]=keys.has(km[k]));const p=pads[player];if(p&&p.connected){let ax=p.axes[0]||0,ay=p.axes[1]||0;const b=i=>!!p.buttons[i]?.pressed;obj.left ||=ax<-.25||b(14);obj.right ||=ax>.25||b(15);obj.up ||=ay<-.52||b(12);obj.down ||=ay>.52||b(13);obj.punch ||=b(0);obj.kick ||=b(1);obj.sp1 ||=b(4);obj.sp2 ||=b(5);obj.ult ||=b(6);obj.block ||=b(7);if(b(9)&&!padsPrev[player].start&&(screen==='fight'||screen==='pause'))togglePause();padsPrev[player].start=b(9);}
+ if(mobileMode&&player===0&&screen==='fight')for(const action of touchActions)obj[action]=true;
  return obj;}
 
 const BUFFER_ACTIONS=['up','punch','kick','sp1','sp2','ult','block'];

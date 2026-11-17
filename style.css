@@ -240,3 +240,39 @@
  .kombat-select .match-slot .selection-portrait,.selection-portrait{width:36px;height:36px}
  .arena-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+.touch-controls[hidden],.touch-pause[hidden]{display:none!important}
+.touch-controls{position:absolute;bottom:0;left:0;right:0;height:112px;display:flex;justify-content:space-between;align-items:center;padding:4px max(12px,env(safe-area-inset-right)) 4px max(12px,env(safe-area-inset-left));background:#100e17;z-index:5;touch-action:none;user-select:none;-webkit-user-select:none}
+.touch-pad{position:relative;width:128px;height:104px;background:#292330;border:2px solid #98734a;border-radius:18px;touch-action:none;color:#ffe1a0}
+.touch-pad span{position:absolute;pointer-events:none}.pad-up{top:3px;left:55px}.pad-down{bottom:3px;left:55px}.pad-left{left:9px;top:40px}.pad-right{right:9px;top:40px}.pad-center{left:55px;top:40px;color:#8b755e}
+.touch-buttons{display:grid;grid-template-columns:repeat(3,58px);gap:6px}
+.touch-buttons button{height:46px;border:2px solid #98734a;border-radius:9px;background:#302431;color:#ffe1a0;font:bold 11px system-ui;touch-action:none;padding:0}
+.touch-buttons .touch-held{background:#94612c;border-color:#ffe1a0;transform:translateY(1px)}
+.touch-pause{position:absolute;right:max(8px,env(safe-area-inset-right));top:8px;z-index:6;width:44px;height:38px;background:#201923dd;color:#ffe1a0;border:1px solid #98734a;border-radius:6px;touch-action:manipulation}
+.rotate-hint{display:none}
+.mobile-mode{overscroll-behavior:none}
+.mobile-mode .app{width:100%;padding:0}
+.mobile-mode .sidebar,.mobile-mode .footer,.mobile-mode .underbar{display:none}
+.mobile-mode .layout{display:block}
+.mobile-mode .topbar{padding:4px 10px;margin:0;min-height:40px}
+.mobile-mode .brand small,.mobile-mode .top-actions .pill{display:none}
+.mobile-mode .brand strong{font-size:20px}
+.mobile-mode .gamebox{border:0;box-shadow:none;border-radius:0;height:calc(100dvh - 44px);aspect-ratio:auto}
+.mobile-mode .gamebox>#arena{width:100%;height:100%;object-fit:contain}
+.mobile-mode .modal{padding:6px}
+.mobile-mode .selection-portrait,.mobile-mode .kombat-select .match-slot .selection-portrait{width:40px;height:40px}
+.mobile-mode .kombat-select .roster-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+.mobile-mode .match-slot{min-height:0;padding:3px}
+.mobile-mode .screen-heading{font-size:18px;margin:0 0 4px}
+.mobile-mode .select-status{margin:4px 0}
+.mobile-mode .paused{overflow-y:auto}
+.mobile-fighting .topbar{display:none}
+.mobile-fighting .gamebox{height:100dvh;padding-bottom:112px;touch-action:none}
+.mobile-fighting .gamebox>#arena{height:100%}
+.mobile-fighting .screenfilter{bottom:112px}
+@media(orientation:portrait){
+ .mobile-mode .rotate-hint{display:block;text-align:center;padding:8px;color:#ffce63;background:#201923}
+ .mobile-mode .gamebox{height:calc(100dvh - 84px)}
+ .mobile-mode .kombat-select .roster-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .mobile-fighting .gamebox{height:calc(100dvh - 40px)}
+}
