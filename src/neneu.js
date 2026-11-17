@@ -41,6 +41,8 @@ function updateNeneuDog(dog,dt){
  const point={x:nose,y:FLOOR-(brutus?51:33),
   onHit:()=>{
    fx('burst',nose,point.y,dog.color,dog.combo?.34:.23,dog.combo?105:brutus?80:53);
+   if(brutus)fx('shock',nose,FLOOR,'#ed635b',.29,110);
+   else spawnParticle(nose,FLOOR-12,'#ffcf7a',8,155);
    if(dog.combo)dog.combo.neneuCombo={target,started:dog.combo.elapsed,stage:0,dir:dog.dir};
   },
   onBlock:()=>fx('burst',nose,point.y,'#9ae7ff',.14,38),
@@ -156,7 +158,30 @@ function drawNeneuDog(dog){
  const frame=dog.phase==='exit'?(dog.combo&&brutus&&dog.life>.13?13:brutus?15:7):
   brutus?(dog.phase==='guard'?10:dog.age<.11?11:12+Math.floor(dog.age*20)%2):
   dog.age<.08?1:stride;
+ drawNeneuDogTrail(dog,brutus);
  const size=brutus?3.65:3.45;
  drawNeneuFrame('dogs',frame,size*(dog.combo?1.12:1));
  ctx.restore();
+}
+
+function drawNeneuDogTrail(dog,brutus){
+ if(dog.phase==='guard'){
+  const pulse=.45+.25*Math.sin(dog.age*15);
+  ctx.globalAlpha=pulse;
+  poly([[-57,-3],[-39,-11],[42,-11],[60,-3],[39,4],[-40,4]],'#ba3a38');
+  poly([[-45,-3],[-33,-7],[35,-7],[46,-3],[33,-1],[-34,-1]],'#ffd3a1');
+  ctx.globalAlpha=1;
+  return;
+ }
+ if(dog.phase!=='run'||dog.age<(brutus?.11:.08))return;
+ const tick=Math.floor(dog.age*25);
+ const color=brutus?'#ff8965':'#ffc674';
+ for(let i=0;i<6;i++){
+  const age=(tick+i*4)%13;
+  const x=-32-i*10-age*2;
+  const y=-3-(i%3)*6-age;
+  ctx.globalAlpha=(1-age/14)*.77;
+  poly([[x,y],[x-11-age,y+3],[x-3,y+7],[x+8,y+4]],color);
+ }
+ ctx.globalAlpha=1;
 }
