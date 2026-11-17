@@ -43,9 +43,32 @@ function showArenaSelection(){
  </div>`);
 }
 function selectionPortrait(key){
- if(key==='kingbum')return '<span class="selection-portrait fighter-avatar king-avatar" aria-hidden="true"></span>';
- const file={pitufo:'pitufo_idle_palette',paje:'paje-avatar',neneu:'neneu-avatar'}[key]??key+'_idle';
- return `<img class="selection-portrait" src="assets/fighters/${file}.png" alt="">`;
+ return `<canvas class="selection-portrait" width="64" height="64" data-idle-portrait="${key}" aria-hidden="true"></canvas>`;
+}
+
+function paintSelectionPortraits(){
+ const [px,py,pw,ph]=pneusonFrames.idle[0];
+ const idleFrames={
+  dino:[dinoAtlas,0,0,100,120],
+  pneuson:[pneusonAtlas,px,py,pw,ph],
+  kingbum:[kingAtlases.movement,0,0,96,80],
+  paje:[pajeAssets.movement,0,0,96,84],
+  neneu:[neneuAtlases.base,0,0,96,84]
+ };
+ for(const portrait of modal.querySelectorAll('[data-idle-portrait]')){
+  const key=portrait.dataset.idlePortrait;
+  const [image,x,y,w,h]=idleFrames[key]??[arcadeSprites[key],0,0,80,80];
+  const draw=()=>{
+   if(!portrait.isConnected)return;
+   const context=portrait.getContext('2d');
+   const scale=64/Math.max(w,h);
+   const width=Math.round(w*scale),height=Math.round(h*scale);
+   context.imageSmoothingEnabled=false;
+   context.drawImage(image,x,y,w,h,Math.floor((64-width)/2),64-height,width,height);
+  };
+  if(image.naturalWidth)draw();
+  else image.addEventListener('load',draw,{once:true});
+ }
 }
 
 function showSelection(){
@@ -84,6 +107,7 @@ function showSelection(){
    <button class="primary" data-action="start" ${canStart?'':'disabled'}>ESCOLHER ARENA</button>
   </div></div>
  </div>`);
+ paintSelectionPortraits();
  if(selected[0])showMoves(selected[0]);
 }
 
