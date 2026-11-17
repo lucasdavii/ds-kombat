@@ -5,10 +5,16 @@ const intermediateAtlas=imageAsset('assets/fighters/intermediarios.png');
 function drawIntermediateFrame(group,action,index,scale){
  const frame=INTERMEDIATE_FRAMES[group+'/'+action]?.[index];
  if(!frame||!intermediateAtlas.naturalWidth)return false;
- const [x,y,w,h,ax,ay]=frame;
+ const [x,y,w,h,ax,ay,eyeX,eyeY]=frame;
  ctx.imageSmoothingEnabled=false;
  ctx.drawImage(intermediateAtlas,x,y,w,h,-Math.round(ax*scale),-Math.round(ay*scale),
   Math.round(w*scale),Math.round(h*scale));
+ if(eyeX!==undefined){
+  ctx.save();
+  ctx.fillStyle='#d5d8fa';
+  ctx.fillRect(Math.round((eyeX-ax)*scale),Math.round((eyeY-ay)*scale),Math.round(2*scale),Math.round(scale));
+  ctx.restore();
+ }
  return true;
 }
 
