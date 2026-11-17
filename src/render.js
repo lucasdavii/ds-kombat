@@ -65,6 +65,8 @@ function drawFighter(f,t){const current=f.action;let st=current;
   drawKingBum(f);
  }else if(f.key==='paje'){
   drawPaje(f,t);
+ }else if(f.key==='neneu'){
+  drawNeneuLocalPreview(f);
  }else if(drawMovementPose(f)){
   // O movimento tem sua própria sequência.
  }else if(typeof drawRevisionFighter==='function'&&drawRevisionFighter(f,t)){
@@ -200,7 +202,7 @@ function drawProjectiles(t=reviewClock){for(const p of projectiles){ctx.save();c
  else{ctx.globalAlpha=.75;ctx.fillStyle=p.color;ctx.beginPath();ctx.ellipse(0,0,p.radius*1.2,p.radius*.65,0,0,7);ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#ecffe9';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-p.radius,0);ctx.lineTo(p.radius,0);ctx.stroke();}
  ctx.restore();}}
 
-function drawMinions(){for(const m of minions){if(m.delay>0)continue;if(m.type==='pitufo'){
+function drawMinions(){for(const m of minions){if(m.delay>0)continue;if(m.type==='neneuDog'){drawNeneuDogLocalPreview(m);}else if(m.type==='pitufo'){
   ctx.save();ctx.translate(Math.round(m.x),Math.round(m.y));ctx.scale(m.dir,1);
   const age=m.activeAge??0;
   const entry=clamp(age/.16,0,1);

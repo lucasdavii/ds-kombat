@@ -70,7 +70,7 @@ function updateEntities(dt){
   fx(p.type==='ancestor'?'ancestorImpact':'burst',point.x,point.y,p.color,.26,60);
   projectiles.splice(i,1);
  }
- for(let i=minions.length-1;i>=0;i--){const m=minions[i];m.life-=dt;if(m.delay>0){m.delay-=dt;continue;}if(m.type==='brother'){const finished=updateGordin(m,dt);if(game.roundOver)return;if(finished)minions.splice(i,1);continue;}m.activeAge=(m.activeAge??0)+dt;
+ for(let i=minions.length-1;i>=0;i--){const m=minions[i];m.life-=dt;if(m.delay>0){m.delay-=dt;continue;}if(m.type==='neneuDog'){const finished=updateNeneuDog(m,dt);if(game.roundOver)return;if(finished)minions.splice(i,1);continue;}if(m.type==='brother'){const finished=updateGordin(m,dt);if(game.roundOver)return;if(finished)minions.splice(i,1);continue;}m.activeAge=(m.activeAge??0)+dt;
   const acceleration=.35+.65*clamp(m.activeAge/.18,0,1);
   m.x+=m.dir*m.speed*acceleration*dt;
   const target=game.f[1-m.source.player];if(target.hp>0&&Math.abs(target.x-m.x)<40&&hurtbox(target).bottom>=m.y-75&&hurtbox(target).top<=m.y){hit(m.source,target,m.damage,14,Infinity,m.x-m.dir*24,m.dir);if(game.roundOver)return;fx('burst',m.x,m.y-65,m.color,.36,62);minions.splice(i,1);}else if(m.life<0||m.x<-140||m.x>W+140)minions.splice(i,1);}

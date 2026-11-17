@@ -10,6 +10,7 @@ function updatePower(f,dt){
  move.elapsed+=dt;
  if(f.key==='kingbum')advanceKingPower(f,move,previous);
  if(f.key==='paje')advancePajePower(f,move,previous);
+ if(f.key==='neneu')advanceNeneuPower(f,move);
  if(!move.fired&&move.elapsed+1e-9>=move.contact){
   move.fired=true;
   if(move.slot===2)resolveUltimate(f);
@@ -277,6 +278,7 @@ function resolveSpecial(f,slot){
   else projectile(f,'tire',{...offset,radius:56,speed:420,life:2.4,color:'#ff8e40'});
   break;
  }
+ case 'neneu':summonNeneuDog(f,slot);break;
  case 'paje':resolvePajePower(f,enemy,slot);break;
  case 'kingbum':resolveKingSpecial(f,enemy,slot);break;
  case 'mucutuba':
@@ -302,6 +304,7 @@ function ultimate(f){if(!canAttack(f)||f.energy<100)return;const data=f.c.powers
 function resolveUltimate(f){
  const data=f.c.powers[2];const enemy=game.f[1-f.player];
  switch(f.key){
+ case 'neneu':summonNeneuDog(f,2);break;
  case 'paje':resolvePajePower(f,enemy,2);break;
  case 'kingbum':resolveKingUltimate(f,enemy);break;
  case 'chapinha':f.buffTimer=15;f.damageBuff=15;fx('burst',f.x,f.y-120,'#ff3243',1.1,110);break;
