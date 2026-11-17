@@ -101,12 +101,7 @@ function drawPaje(f,t){
  const image=pajeAssets[atlas],scale=f.c.size/62;
  if(!image.naturalWidth)return;
  if(atlas==='powers'&&frame>=9&&frame<=14){
-  // A coluna sólida preenche a abertura da aura em todas as poses.
-  drawPajeFire(6,0,0,scale);
-  const flame=f.powerMove.elapsed*15;
-  if(flame%1<.5||!drawIntermediateFrame('paje-aura','aura',Math.floor(flame)%4,scale*1.16)){
-   drawPajeFire(Math.floor(flame)%4,0,0,scale*1.16);
-  }
+  drawFittedAura(f,f.powerMove.elapsed,0,0,['#7a1b0e','#ff7518','#fff09a']);
  }
  if(!drawPowerIntermediate(f,scale))ctx.drawImage(image,frame%4*96,Math.floor(frame/4)*84,96,84,
   -48*scale,-78*scale,96*scale,84*scale);

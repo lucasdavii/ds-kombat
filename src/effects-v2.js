@@ -37,6 +37,30 @@ drawPowerProjectile=function(p){
  }
  return originalProjectile(p);
 };
+function drawFittedAura(f,t,x,feet,colors){
+  const opacity=ctx.globalAlpha;
+  const low=f.action==='crouch'||(f.action==='guard'&&f.lowGuard);
+  const height=f.c.size*(f.action==='down'?.48:low?.87:1.22);
+  const width=f.c.size*(f.action==='down'?.78:.53);
+  
+  const phase=Math.floor(t*20)*Math.PI*2/5;
+  ctx.save();
+  for(let y=0;y<height;y+=4){
+   const u=y/height;
+   const spread=width*(.36+.64*Math.sin(u*Math.PI))*(1+.11*Math.sin(u*28+phase));
+   
+   const edge=8+4*Math.sin(u*21+phase);
+   ctx.globalAlpha=opacity*.65;
+   rect(Math.round(x-spread),Math.round(feet-y),Math.round(spread*2),4,colors[0]);
+   ctx.globalAlpha=opacity*.96;
+   for(const side of [-1,1]){
+    const border=Math.round(x+(side<0?-spread:spread-edge));
+    rect(border,Math.round(feet-y),Math.round(edge),4,colors[1]);
+    if(Math.sin(u*36+phase+side)>0)rect(border+3,Math.round(feet-y),3,4,colors[2]);
+   }
+  }
+  ctx.restore();
+}
 const originalAura=drawPersistentAura;
 drawPersistentAura=function(f,t,foreground=false){
  if(!foreground&&!game.roundOver&&f.powerMove){
@@ -45,28 +69,8 @@ drawPersistentAura=function(f,t,foreground=false){
   if(f.key==='gaga'&&move.slot===0){ctx.save();ctx.translate(f.x,f.y-f.c.size*.6);ctx.scale(f.dir,1);revisedFrame('gaga',0,frame,110,0,220,70);ctx.restore();}
  }
  const mode=visualMode(f);
- if(!game.roundOver&&!foreground&&['chapinha','gaga'].includes(mode)){
-  const low=f.action==='crouch'||(f.action==='guard'&&f.lowGuard);
-  const height=f.c.size*(f.action==='down'?.62:low?1.01:1.48);
-  const width=f.c.size*(f.action==='down'?.78:.53);
-  const colors=mode==='chapinha'?['#55262e','#fa4056','#ffdda0']:['#40205e','#b878ff','#f9dcff'];
-  const phase=Math.floor(t*20)*Math.PI*2/5;
-  ctx.save();
-  for(let y=0;y<height;y+=4){
-   const u=y/height;
-   const spread=width*(.36+.64*Math.sin(u*Math.PI))*(1+.11*Math.sin(u*28+phase));
-   const x=f.x+Math.sin(u*14-phase)*7;
-   const edge=8+4*Math.sin(u*21+phase);
-   ctx.globalAlpha=.65;
-   rect(Math.round(x-spread),Math.round(f.y-y),Math.round(spread*2),4,colors[0]);
-   ctx.globalAlpha=.96;
-   for(const side of [-1,1]){
-    const border=Math.round(x+side*(spread-edge));
-    rect(border,Math.round(f.y-y),Math.round(edge),4,colors[1]);
-    if(Math.sin(u*36+phase+side)>0)rect(border+3,Math.round(f.y-y),3,4,colors[2]);
-   }
-  }
-  ctx.restore();
+ if(!foreground&&mode){
+  drawFittedAura(f,t,f.x,f.y,auraColors[mode] || ['#155f3a','#8cff4c','#ffffe4']);
   return;
  }
  originalAura(f,t,foreground);
@@ -79,7 +83,7 @@ const originalKingAura=drawKingCrownAura;
 drawKingCrownAura=function(f,move,foreground){
  if(!foreground&&revisedFX.naturalWidth){
  ctx.save();ctx.globalAlpha*=clamp(move.elapsed*11,0,1)*clamp((move.duration-move.elapsed)*10,0,1);
- revisedFrame('kingbum',2,revisedLoop(move.elapsed),0,0,f.c.size*.95,f.c.size*1.15,true);ctx.restore();return;
+ drawFittedAura(f,move.elapsed,0,0,['#55262e','#ee8b44','#ffcf77']);ctx.restore();return;
  }
  originalKingAura(f,move,foreground);
 };
