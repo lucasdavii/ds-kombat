@@ -61,12 +61,16 @@ function drawFighter(f,t){const current=f.action;let st=current;
   ctx.translate(0,shoulder);
  }
  ctx.scale(f.dir,1);if(f.hitFlash>0)ctx.filter='brightness(1.12)';ctx.imageSmoothingEnabled=false;
- if(f.key==='kingbum'){
+ if(drawFighterIntermediate(f)){
+  // O quadro intermediário substitui apenas o desenho.
+ }else if(f.key==='kingbum'){
   drawKingBum(f);
  }else if(f.key==='paje'){
   drawPaje(f,t);
  }else if(f.key==='neneu'){
   drawNeneu(f,t);
+ }else if(!game.roundOver&&!visualMode(f)&&drawPowerIntermediate(f,f.c.size/64)){
+  // Preparação visual do poder.
  }else if(drawMovementPose(f)){
   // O movimento tem sua própria sequência.
  }else if(typeof drawRevisionFighter==='function'&&drawRevisionFighter(f,t)){

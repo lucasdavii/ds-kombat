@@ -141,7 +141,7 @@ function drawNeneuFrame(sheet,frame,scale){
 
 function drawNeneu(f,t){
  const [sheet,frame]=neneuPose(f,t);
- drawNeneuFrame(sheet,frame,f.c.size/62);
+ if(!drawPowerIntermediate(f,f.c.size/62))drawNeneuFrame(sheet,frame,f.c.size/62);
  if(sheet==='powers'&&frame===2){
   const phase=f.powerMove.elapsed-f.powerMove.contact;
   pixelText('♪',45+phase*160,-215-phase*240,23,'#ffe1a6','center',2);
@@ -160,7 +160,8 @@ function drawNeneuDog(dog){
   dog.age<.08?1:stride;
  drawNeneuDogTrail(dog,brutus);
  const size=brutus?3.65:3.45;
- drawNeneuFrame('dogs',frame,size*(dog.combo?1.12:1));
+ const scale=size*(dog.combo?1.12:1);
+ if(!drawDogIntermediate(dog,brutus,scale))drawNeneuFrame('dogs',frame,scale);
  ctx.restore();
 }
 

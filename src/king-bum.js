@@ -340,7 +340,7 @@ function drawKingBum(f){
  if(!image.naturalWidth)return;
  drawKingPowerAura(f,false);
  const scale=f.c.size/62;
- ctx.drawImage(image,frame%4*96,Math.floor(frame/4)*80,96,80,
+ if(!drawPowerIntermediate(f,scale))ctx.drawImage(image,frame%4*96,Math.floor(frame/4)*80,96,80,
   Math.round(-48*scale),Math.round(-72*scale),Math.round(96*scale),Math.round(80*scale));
  drawKingPowerAura(f,true);
 }
