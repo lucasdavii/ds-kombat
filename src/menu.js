@@ -46,6 +46,29 @@ function selectionPortrait(key){
  return `<canvas class="selection-portrait" width="64" height="64" data-idle-portrait="${key}" aria-hidden="true"></canvas>`;
 }
 
+// Portrait framing is independent of combat sprites and hitboxes.
+const selectionCropCache=new WeakMap();
+function selectionSpriteBounds(image,x,y,w,h){
+ let frames=selectionCropCache.get(image);
+ if(!frames){frames=new Map();selectionCropCache.set(image,frames);}
+ const key=[x,y,w,h].join(',');
+ if(frames.has(key))return frames.get(key);
+ const canvas=document.createElement('canvas');
+ canvas.width=w;canvas.height=h;
+ const ctx=canvas.getContext('2d',{willReadFrequently:true});
+ ctx.drawImage(image,x,y,w,h,0,0,w,h);
+ const pixels=ctx.getImageData(0,0,w,h).data;
+ let left=w,top=h,right=-1,bottom=-1;
+ for(let row=0;row<h;row++)for(let col=0;col<w;col++){
+  if(pixels[(row*w+col)*4+3]===0)continue;
+  left=Math.min(left,col);right=Math.max(right,col);
+  top=Math.min(top,row);bottom=Math.max(bottom,row);
+ }
+ const bounds=right<0?null:[x+left,y+top,right-left+1,bottom-top+1];
+ frames.set(key,bounds);
+ return bounds;
+}
+
 function paintSelectionPortraits(){
  const [px,py,pw,ph]=pneusonFrames.idle[0];
  const idleFrames={
@@ -61,10 +84,17 @@ function paintSelectionPortraits(){
   const draw=()=>{
    if(!portrait.isConnected)return;
    const context=portrait.getContext('2d');
-   const scale=64/Math.max(w,h);
-   const width=Math.round(w*scale),height=Math.round(h*scale);
+   context.clearRect(0,0,64,64);
+   const bounds=selectionSpriteBounds(image,x,y,w,h);
+   if(!bounds)return;
+   const [sx,sy,sw,sh]=bounds;
+   // Use roster height, not atlas padding; keep short/tall fighters distinct.
+   const tallest=Math.max(...CHARS.map(id=>FIGHTERS[id].size));
+   const targetHeight=58*FIGHTERS[key].size/tallest;
+   const scale=Math.min(58/sw,targetHeight/sh);
+   const width=Math.round(sw*scale),height=Math.round(sh*scale);
    context.imageSmoothingEnabled=false;
-   context.drawImage(image,x,y,w,h,Math.floor((64-width)/2),64-height,width,height);
+   context.drawImage(image,sx,sy,sw,sh,Math.floor((64-width)/2),61-height,width,height);
   };
   if(image.naturalWidth)draw();
   else image.addEventListener('load',draw,{once:true});
