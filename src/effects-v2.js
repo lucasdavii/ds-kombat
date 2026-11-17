@@ -40,14 +40,16 @@ drawPowerProjectile=function(p){
 function drawFittedAura(f,t,x,feet,colors){
   const opacity=ctx.globalAlpha;
   const low=f.action==='crouch'||(f.action==='guard'&&f.lowGuard);
-  const height=f.c.size*(f.action==='down'?.63:low?1.16:1.58);
-  const width=f.c.size*(f.action==='down'?1.04:.85);
+  const height=f.c.size*(f.action==='down'?.58:low?1.02:1.39);
+  const width=f.c.size*(f.action==='down'?.96:.77);
   
   const phase=Math.floor(t*20)*Math.PI*2/5;
   ctx.save();
   for(let y=0;y<height;y+=4){
    const u=y/height;
-   const spread=width*(1-Math.pow(u,2.1))*(.93+.07*Math.cos(u*25+phase));
+   const taper=1-Math.pow(u,2.6);
+   const ripple=Math.sin(u*30-phase)*.055*Math.sin(u*Math.PI);
+   const spread=Math.max(2,Math.round(width*taper*(1+ripple)/4)*4);
    
    const edge=Math.min(spread,8+4*Math.sin(u*21+phase));
    ctx.globalAlpha=opacity*.65;
