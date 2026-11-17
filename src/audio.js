@@ -22,10 +22,6 @@ function loadMusicTrack(scene){
  const entry={track,level:0,starting:false,cued:false};
  track.preload='auto';
  track.volume=0;
- track.addEventListener('loadedmetadata',()=>{
-  track.currentTime=cue;
-  entry.cued=true;
- },{once:true});
  track.src='assets/music/'+scene+'.ogg';
  soundtrack.set(scene,entry);
  return entry;
@@ -44,21 +40,19 @@ function mixSoundtrack(now){
   screen==='results'?'victory':screen==='select'?'select':
   screen==='pause'?null:'menu';
  if(scene)loadMusicTrack(scene);
- const incoming=scene?soundtrack.get(scene):null;
  for(const [name,entry] of soundtrack){
   const {track}=entry;
   const selected=name===scene;
   const wanted=selected&&soundOn&&!document.hidden;
   const end=soundtrackEnd[name];
   if(wanted&&end&&(track.ended||track.currentTime>=end))track.currentTime=soundtrackCue[name]??0;
-  if(wanted&&entry.cued&&track.paused&&!track.ended&&!entry.starting){
+  if(wanted&&track.paused&&!track.ended&&!entry.starting){
    entry.starting=true;
    track.play().catch(()=>{}).finally(()=>{entry.starting=false;});
   }
   const next=wanted&&!track.paused&&track.readyState>=2&&!track.seeking?1:0;
-  // Cue the incoming track before lowering the outgoing one.
-  if(!selected&&soundOn&&!document.hidden&&incoming?.starting&&!incoming.track.error)continue;
-  const speed=scene==='ultimate'||name==='ultimate'?3.5:1.25;
+  const selectionTransition=scene==='select'||name==='select';
+  const speed=scene==='ultimate'||name==='ultimate'?3.5:selectionTransition?1/.35:1.25;
   entry.level+=Math.sign(next-entry.level)*Math.min(Math.abs(next-entry.level),dt*speed);
   track.volume=Math.sin(entry.level*Math.PI/2)*Math.min(1,Math.max(0,soundVolume))*.55;
   if(!wanted&&entry.level===0){
