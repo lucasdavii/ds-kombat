@@ -172,8 +172,10 @@ function hurtbox(f){
  const low=f.grounded&&(f.action==='crouch'||f.action==='land'||f.action==='down'||f.action==='wakeup'||
   (f.action==='guard'||f.action==='blockstun')&&f.lowGuard||
   f.action==='attack'&&f.attackStance==='low');
- const halfWidth=f.c.size*(low?.18:.15);
- return {left:f.x-halfWidth,right:f.x+halfWidth,top:f.y-f.c.size*(low?.55:.91),bottom:f.y-3};
+ const compact=f.key==='chapinha';
+ const halfWidth=f.c.size*(compact?(low?.22:.19):(low?.18:.15));
+ const height=f.c.size*(compact?(low?.68:1.02):(low?.55:.91));
+ return {left:f.x-halfWidth,right:f.x+halfWidth,top:f.y-height,bottom:f.y-3};
 }
 function pushbox(f){
  const body=hurtbox(f);
@@ -267,7 +269,7 @@ function resolveSpecial(f,slot){
  case 'gaga':if(slot===0){f.boostedStretch=true;if((enemy.x-f.x)*f.dir>=0&&Math.abs(enemy.y-f.y)<125)hit(f,enemy,data.damage,data.knock,f.buffTimer>0?data.buffRange:data.range);f.boostedStretch=false;}else{f.vy=-650;f.airVX=f.dir*180;f.grounded=false;f.pendingGroundPunch=true;f.groundMove={range:data.range,damage:data.damage,color:'#d6a6ff'};}break;
  case 'dino':if(slot===0){if(!startGrab(f,enemy))fx('text',f.x,f.y-195,'#dfb65d',.5,0,{text:'ERROU'});}else{
   const scale=f.c.size/64;
-  fx('dinoBeam',f.x+f.dir*9*scale,f.y-55*scale,'#a2ff40',.24,38,
+  fx('dinoBeam',f.x+f.dir*9*scale,f.y-46*scale,'#a2ff40',.24,58,
    {source:f,direction:f.dir,damage:data.damage});
  }break;
  case 'pneuson':{
