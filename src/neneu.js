@@ -78,32 +78,77 @@ function advanceNeneuPower(f,move){
  }
 }
 
-// Marcadores para validar a lógica local enquanto faltam as folhas aprovadas.
-function drawNeneuLocalPreview(f){
- const crouching=f.action==='crouch'||f.lowGuard;
- const down=f.action==='down'||f.hp<=0;
- const height=f.c.size*(crouching?.55:.83);
- rect(down?-80:-30,down?-32:-height,down?160:60,down?30:height,f.c.accent);
- if(f.action==='attack'&&attackTimeline(f).active){
-  const reach=strikeBox(f);
-  rect(20,reach.top-f.y,Math.max(0,(reach.right-reach.left)-20),12,'#f8d5a2');
+const neneuAtlases=Object.fromEntries(['base','combat','results','dogs','powers'].map(
+ sheet=>[sheet,imageAsset('assets/fighters/neneu-'+sheet+'.png')]));
+
+function neneuPose(f,t){
+ if(game.roundOver){
+  const elapsed=2.45-game.resultTime;
+  if(f.hp<=0)return ['results',elapsed<.16?4:5];
+  return ['results',game.winner===f.player?(elapsed<.7?13:14):15];
  }
- pixelText('N',0,down?-32:-height*.7,26,'#21171a','center',1);
+ if(f.grabbedBy)return ['results',f.grounded?8:9];
+ if(f.grab||f.action==='throwRecovery')return ['powers',6];
+ const move=f.powerMove;
+ if(move&&f.action===move.pose){
+  if(move.slot<2){
+   const stage=move.elapsed<move.contact?.5+Math.floor(move.elapsed/move.contact*2):
+    move.elapsed-move.contact<.095?2:3;
+   return ['powers',move.slot*4+Math.floor(stage)];
+  }
+  const combo=move.neneuCombo;
+  const age=combo?move.elapsed-combo.started:0;
+  return ['powers',!move.fired?8:!combo?9:combo.stage===2?(age<.51?13:age<.64?14:15):age<.2?10:12];
+ }
+ switch(f.action){
+ case 'walk':return ['combat',Math.floor(f.walkClock*10)%4];
+ case 'quickStep':return ['combat',f.actionTime>.1?4:5];
+ case 'crouch':return ['base',4];
+ case 'land':return ['combat',7];
+ case 'jump':return ['combat',6];
+ case 'guard':case 'blockstun':return ['results',f.lowGuard?1:0];
+ case 'hit':return ['results',f.grounded?(f.actionTime>.18?3:2):4];
+ case 'down':return ['results',f.grounded?5:4];
+ case 'wakeup':return ['results',f.rollDirection&&f.actionTime>.1?6:7];
+ case 'escape':return ['results',10];
+ case 'attack':{
+  const {active,step}=attackTimeline(f);
+  const kick=f.attackKind==='kick';
+  if(f.attackStance==='low')return active?['combat',kick?15:11]:['base',4];
+  if(f.attackStance==='air'&&!active)return ['combat',6];
+  return ['combat',(kick?12:8)+(active?1:step===3?2:0)];
+ }
+ default:return game.phase==='intro'?['results',12]:['base',Math.floor(t*3)%2];
+ }
 }
 
-function drawNeneuDogLocalPreview(dog){
+function drawNeneuFrame(sheet,frame,scale){
+ const image=neneuAtlases[sheet];
+ if(!image.naturalWidth)return false;
+ ctx.drawImage(image,frame%4*96,Math.floor(frame/4)*84,96,84,
+  -48*scale,-78*scale,96*scale,84*scale);
+ return true;
+}
+
+function drawNeneu(f,t){
+ const [sheet,frame]=neneuPose(f,t);
+ drawNeneuFrame(sheet,frame,f.c.size/62);
+ if(sheet==='powers'&&frame===2){
+  const phase=f.powerMove.elapsed-f.powerMove.contact;
+  pixelText('♪',45+phase*160,-215-phase*240,23,'#ffe1a6','center',2);
+ }
+}
+
+function drawNeneuDog(dog){
  ctx.save();
  ctx.translate(dog.x,dog.y);
  ctx.scale(dog.dir,1);
+ ctx.imageSmoothingEnabled=false;
  const brutus=dog.kind==='brutus';
- const h=brutus?50:39;
- const body=brutus?'#48424c':'#c88c42';
- rect(-32,-h,61,h*.56,body);
- rect(15,-h-13,29,25,body);
- rect(14,-h-2,7,23,brutus?'#ed635b':'#5489c4');
- const step=dog.phase==='guard'?0:Math.floor(dog.age*18)%2*7;
- rect(-24+step,-h*.5,11,h*.5,body);
- rect(13-step,-h*.5,11,h*.5,body);
- rect(-40,-h-7,16,8,body);
+ const stride=[2,3,4][Math.floor(dog.age*25)%3];
+ const frame=dog.phase==='exit'?(dog.combo&&brutus&&dog.life>.13?13:brutus?15:7):
+  brutus?(dog.phase==='guard'?10:dog.age<.11?11:12+Math.floor(dog.age*20)%2):
+  dog.age<.08?1:stride;
+ drawNeneuFrame('dogs',frame,2.7);
  ctx.restore();
 }

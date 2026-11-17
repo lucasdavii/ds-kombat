@@ -201,3 +201,8 @@
  image-rendering: pixelated;
 }
 .fighter-avatar.paje-avatar::before,.fighter-avatar.paje-avatar::after {display:none}
+.fighter-avatar.neneu-avatar {
+ background: center bottom / auto 95% no-repeat url('assets/fighters/neneu-avatar.png');
+ image-rendering: pixelated;
+}
+.fighter-avatar.neneu-avatar::before,.fighter-avatar.neneu-avatar::after {display:none}
