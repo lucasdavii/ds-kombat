@@ -1,0 +1,23 @@
+'use strict';
+
+// Recargas em quadros a 60 Hz. As janelas de animação ficam no arquivo de cada lutador.
+{
+ const balance = {
+  chapinha: {role:'Pressão', hp:102, speed:322, atk:1.12, cooldowns:[180,282]},
+  pitufo: {role:'Tanque de invocação', hp:138, speed:250, cooldowns:[240,282]},
+  gaga: {role:'Alcance', hp:103, speed:331, cooldowns:[240,312]},
+  dino: {role:'Agarrador', hp:122, speed:296, atk:1.09, cooldowns:[168,270]},
+  pneuson: {role:'Tanque de projéteis', hp:145, speed:232, cooldowns:[198,312]},
+  mucutuba: {role:'Alcance e cura', hp:108, speed:333, cooldowns:[198,720]},
+  kingbum: {role:'Tanque de pressão', hp:139, speed:241, cooldowns:[228,840]},
+  paje: {role:'Velocidade', hp:96, speed:355, cooldowns:[195,312]},
+  neneu: {role:'Invocação', hp:112, speed:288, cooldowns:[240,300]}
+ };
+ for(const [key,{cooldowns,...stats}] of Object.entries(balance)){
+  const fighter=FIGHTERS[key];
+  Object.assign(fighter,stats);
+  cooldowns.forEach((frames,slot)=>{fighter.powers[slot].cooldown=frames;});
+ }
+ FIGHTERS.gaga.powers[0].damage=16;
+ FIGHTERS.mucutuba.powers[1].healing=5;
+}
