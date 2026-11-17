@@ -18,12 +18,30 @@ function showHome(){clearTransient();screen='home';game=null;setStatus('MENU INI
   ${btn('COMO JOGAR','help','ghost')}
  </div>`);
 }
-function selectMode(m){mode=m;selected=[null,null];selectFocus=0;showSelection();}
+function selectMode(m){mode=m;selectedArena=undefined;selected=[null,null];selectFocus=0;showSelection();}
 function fighterProfileName(fighter){
  const name=fighter.name.toLocaleLowerCase('pt-BR');
  return name[0].toLocaleUpperCase('pt-BR')+name.slice(1);
 }
 
+let selectedArena;
+const arenaNames=['Mercado','Posto Catatau','Bar do Rubim','Borracharia','Heliponto'];
+const arenaFiles=['mercado','posto','bar','borracharia','heliponto'];
+
+function showArenaSelection(){
+ if(!selected.every(Boolean))return;
+ setStatus('ESCOLHA A ARENA');
+ const arenas=arenaNames.map((name,i)=>`
+  <button class="arena-card" data-action="arena-${i}">
+   <img src="assets/stages/${arenaFiles[i]}.webp" alt="">
+   <strong>${name}</strong>
+  </button>`).join('');
+ showModal(`<div class="arena-selection">
+  <h2 class="screen-heading">ESCOLHA A ARENA</h2>
+  <div class="arena-grid">${arenas}</div>
+  <div class="buttons">${btn('VOLTAR','fighters','ghost')}${btn('⚄ ALEATÓRIO','arena-random','secondary')}</div>
+ </div>`);
+}
 function showSelection(){
  screen='select';
  setStatus(mode==='solo'?'VS CPU':'DUELO LOCAL');
@@ -33,6 +51,7 @@ function showSelection(){
   <button class="match-slot slot-${i+1} ${selectFocus===i?'slot-active':''}"
    data-action="slot-${i}" aria-pressed="${selectFocus===i}">
    <span>${sides[i]}</span>
+   ${key?`<span class="fighter-avatar${key==='kingbum'?' king-avatar':key==='paje'?' paje-avatar':key==='neneu'?' neneu-avatar':''}" data-preview="${key}" aria-hidden="true"></span>`:''}
    <strong>${key?fighterProfileName(FIGHTERS[key]):'Escolher lutador'}</strong>
   </button>`);
  const roster=CHARS.map(key=>{
@@ -49,14 +68,14 @@ function showSelection(){
   <select id="difficulty">${[['facil','FÁCIL'],['normal','NORMAL'],['dificil','DIFÍCIL']]
    .map(([key,label])=>`<option value="${key}" ${difficulty===key?'selected':''}>${label}</option>`).join('')}</select>
  </label>`:'';
- showModal(`<div class="selection">
+ showModal(`<div class="selection kombat-select">
   <h2 class="screen-heading">ESCOLHA SEU LUTADOR</h2>
   <div class="matchup">${slots[0]}<span class="vs">VS</span>${slots[1]}</div>
   <p class="select-status">${selectFocus===null?'CONFRONTO PRONTO':`ESCOLHENDO PARA ${sides[selectFocus]}`}</p>
   <div class="roster-grid">${roster}</div>
   <div class="select-actions">${settings}<div class="buttons">
    ${btn('VOLTAR','menu','ghost')}${btn('ALEATÓRIO','random','secondary')}
-   <button class="primary" data-action="start" ${canStart?'':'disabled'}>LUTAR</button>
+   <button class="primary" data-action="start" ${canStart?'':'disabled'}>ESCOLHER ARENA</button>
   </div></div>
  </div>`);
  if(selected[0])showMoves(selected[0]);
@@ -76,7 +95,12 @@ function randomPick(){
 function showHelp(){screen='help';showModal(`<div><h2 class="screen-heading">COMO JOGAR</h2><div class="help-grid"><div><h3>OBJETIVO</h3><p>Vença dois rounds para ganhar a luta. Reduza a barra de vida do rival a zero antes que os 90 segundos terminem. A barra de ULTIMATE aumenta ao atacar e apanhar.</p></div><div><h3>DEFESA E MOVIMENTO</h3><p>Segure H (J1) ou L (J2) para bloquear golpes vindos da frente. A defesa diminui o dano, mas consome a barra azul; se ela acabar, a guarda quebra por um instante. Agache com S ou ↓, pule com W ou ↑.</p></div><div><h3>ATAQUES</h3><p>J1: F soco, G chute, R e T especiais, Y ultimate. J2: J soco, K chute, U e I especiais, O ultimate. Os especiais possuem tempo de recarga. Também há comandos combinados: ↓ ↘ → + soco (especial 1) ou chute (especial 2), espelhado ao virar. Alguns personagens ativam transformações temporárias.</p></div><div><h3>CONTROLES 🎮</h3><p>Xbox: direcional ou analógico esquerdo move. A soca, B chuta, LB usa o Especial 1, RB usa o Especial 2, LT ativa a ultimate e RT bloqueia. No duelo local, um controle fica com o J2 e o J1 usa o teclado. Com dois controles, cada jogador usa um.</p></div></div><div style="margin-top:20px;text-align:right">${btn('← VOLTAR','menu','secondary')}</div></div>`);}
 function showMoves(k){const c=FIGHTERS[k];$('moveInfo').innerHTML=`<div class="move-title" style="color:${c.accent}">${c.name}</div><div class="move-entry"><b>ESPECIAL 1 • R / U / LB</b><span>${c.specials[0][0]} — ${c.specials[0][1]} (${specialCost(c,0)} de energia)</span></div><div class="move-entry"><b>ESPECIAL 2 • T / I / RB</b><span>${c.specials[1][0]} — ${c.specials[1][1]} (${specialCost(c,1)} de energia)</span></div><div class="move-entry"><b>ULTIMATE • Y / O / LT</b><span>${c.ultimate} — requer 100% de energia.</span></div><div class="move-entry"><b>DEFESA • H / L / RT</b><span>Segure para bloquear no chão. Defender no instante do impacto recupera energia.</span></div><div class="move-entry"><b>MOVIMENTO RÁPIDO</b><span>Dois toques para frente ou para trás. Segure para trás ao levantar para recuar.</span></div><div class="move-entry"><b>AGARRÃO • SOCO + CHUTE</b><span>Aperte juntos perto do rival.</span></div><div class="move-entry"><b>ESCAPE • DEFESA + SOCO</b><span>Interrompe um combo uma vez por round.</span></div>`;}
 modal.addEventListener('change',e=>{if(e.target.id==='difficulty')difficulty=e.target.value;});
-modal.addEventListener('click',e=>{unlockAudio();const char=e.target.closest('[data-char]');if(char){pickChar(char.dataset.char);return;}const button=e.target.closest('[data-action]');if(!button)return;switch(button.dataset.action){case 'solo':selectMode('solo');break;case 'local':selectMode('local');break;case 'help':showHelp();break;case 'training':window.location.href='?treino';break;case 'menu':showHome();$('pausedOverlay').classList.add('hidden');break;case 'slot-0':case 'slot-1':selectFocus=Number(button.dataset.action.at(-1));showSelection();break;case 'random':randomPick();break;case 'start':if(selected.every(Boolean))startMatch();break;case 'rematch':startMatch();break;case 'newSelection':selectMode(mode);break;}});
+modal.addEventListener('click',e=>{unlockAudio();const char=e.target.closest('[data-char]');if(char){pickChar(char.dataset.char);return;}const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;
+ if(/^arena-(?:[0-4]|random)$/.test(action)&&selected.every(Boolean)){
+  selectedArena=action==='arena-random'?Math.floor(Math.random()*arenaNames.length):Number(action.slice(6));
+  startMatch();return;
+ }
+ switch(action){case 'fighters':showSelection();break;case 'solo':selectMode('solo');break;case 'local':selectMode('local');break;case 'help':showHelp();break;case 'training':window.location.href='?treino';break;case 'menu':showHome();$('pausedOverlay').classList.add('hidden');break;case 'slot-0':case 'slot-1':selectFocus=Number(button.dataset.action.at(-1));showSelection();break;case 'random':randomPick();break;case 'start':showArenaSelection();break;case 'rematch':startMatch();break;case 'newSelection':selectMode(mode);break;}});
 $('pausedOverlay').addEventListener('click',e=>{const a=e.target.closest('[data-action]')?.dataset.action;if(a==='resume')togglePause(false);if(a==='restart')startMatch(game.reviewSession);if(a==='menu'){togglePause(false);showHome();}});
 $('volume').oninput=e=>{soundVolume=Number(e.target.value);};
 $('soundToggle').onclick=()=>{unlockAudio();soundOn=!soundOn;$('soundToggle').textContent=soundOn?'🔊 ÁUDIO':'🔇 MUDO';};

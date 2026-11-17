@@ -206,3 +206,21 @@
  image-rendering: pixelated;
 }
 .fighter-avatar.neneu-avatar::before,.fighter-avatar.neneu-avatar::after {display:none}
+
+/* Seleção arcade */
+.kombat-select,.arena-selection{max-width:850px;margin:auto;color:#f8ecd3}
+.kombat-select .screen-heading,.arena-selection .screen-heading{color:#ffcc68;letter-spacing:.09em;text-shadow:0 3px #641525}
+.kombat-select .matchup{gap:12px}
+.kombat-select .match-slot{background:linear-gradient(145deg,#2b1017,#101018);border:2px solid #8c4c28;min-height:62px}
+.kombat-select .match-slot.slot-active{border-color:#ffc86a}
+.kombat-select .roster-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.kombat-select .fighter-card{background:linear-gradient(150deg,#31121b,#13101a);border:2px solid #78432f;padding:4px;min-width:0}
+.kombat-select .fighter-card:hover,.kombat-select .fighter-card:focus-visible,.arena-card:focus-visible{border-color:#ffce63;outline:2px solid #ffce63;outline-offset:1px}
+.kombat-select .fighter-stats{display:none}
+.kombat-select .fighter-avatar,.arena-card img{image-rendering:pixelated}
+.arena-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.arena-card{padding:4px;background:#20131a;border:2px solid #92603d;color:#ffe1a0;min-width:0;cursor:pointer}
+.arena-card:hover{border-color:#ffe1a0}
+.arena-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.arena-card strong{display:block;padding:4px;font-size:clamp(9px,1.4vw,15px)}
+@media(max-width:560px){.kombat-select .roster-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
