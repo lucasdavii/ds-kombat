@@ -5,7 +5,15 @@
 function pixelText(text,x,y,size=26,color='#fff',align='left',outline=5){ctx.save();ctx.font=`900 ${size}px Impact, "Arial Black", sans-serif`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.lineJoin='round';ctx.lineWidth=outline;ctx.strokeStyle='#09060d';ctx.strokeText(text,x,y);ctx.fillStyle=color;ctx.fillText(text,x,y);ctx.restore();}
 function rect(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h);}
 function poly(pts,color){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(...pts[0]);for(let i=1;i<pts.length;i++)ctx.lineTo(...pts[i]);ctx.closePath();ctx.fill();}
-function renderBackdrop(t){if(court.naturalWidth){ctx.imageSmoothingEnabled=false;ctx.drawImage(court,0,0,W,H);return;}const grd=ctx.createLinearGradient(0,0,0,H);grd.addColorStop(0,'#121023');grd.addColorStop(.5,'#4a223a');grd.addColorStop(1,'#1b1018');rect(0,0,W,H,grd);
+const pixelStages=["mercado","posto","bar","borracharia","heliponto"].map(name=>imageAsset('assets/stages/'+name+'.webp'));
+function renderBackdrop(t){
+ const stage=pixelStages[game?.stageIndex];
+ if(stage?.naturalWidth){
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(stage,0,0,W,H);
+  return;
+ }
+ if(court.naturalWidth){ctx.imageSmoothingEnabled=false;ctx.drawImage(court,0,0,W,H);return;}const grd=ctx.createLinearGradient(0,0,0,H);grd.addColorStop(0,'#121023');grd.addColorStop(.5,'#4a223a');grd.addColorStop(1,'#1b1018');rect(0,0,W,H,grd);
  // Estádio urbano noturno — fundo original renderizado por Canvas.
  const glow=ctx.createRadialGradient(640,260,55,640,260,470);glow.addColorStop(0,'#84365088');glow.addColorStop(1,'#46263a00');rect(0,0,W,540,glow);
  for(let i=0;i<20;i++){const x=i*74-34,h=105+((i*47)%140);rect(x,340-h,62,h,'#1c1b2c');for(let wy=348-h;wy<333;wy+=18)for(let wx=x+10;wx<x+56;wx+=18)if((wy+wx)%4>0)rect(wx,wy,7,10,'#59405955');}
