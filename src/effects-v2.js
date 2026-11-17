@@ -41,11 +41,12 @@ function drawFittedAura(f,t,x,feet,colors){
   const opacity=ctx.globalAlpha;
   const low=f.action==='crouch'||(f.action==='guard'&&f.lowGuard);
   const height=f.c.size*(f.action==='down'?.51:low?.88:1.18);
-  const width=f.c.size*(f.action==='down'?.80:.55);
+  const standingWidth={gaga:.61,mucutuba:.51,kingbum:.62,paje:.49}[f.key]??.55;
+  const width=f.c.size*(f.action==='down'?.80:standingWidth);
   
   const phase=Math.floor(t*20)*Math.PI*2/5;
   ctx.save();
-  for(let y=0;y<height*(f.key==='chapinha'?.79:1);y+=4){
+  for(let y=0;y<height*.79;y+=4){
    const u=y/height;
    const taper=1-Math.pow(u,2.6);
    const ripple=Math.sin(u*30-phase)*.055*Math.sin(u*Math.PI);
@@ -61,7 +62,7 @@ function drawFittedAura(f,t,x,feet,colors){
     if(edge>=6&&Math.sin(u*36+phase+side)>0)rect(border+3,Math.round(feet+8-y),3,4,colors[2]);
    }
   }
-  if(f.key==='chapinha'){
+  {
    for(let n=-3;n<=3;n++){
     const offset=n*width*.18;
     const top=height*(.96+.045*Math.cos(phase+n*1.7));
