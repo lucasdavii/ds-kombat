@@ -45,7 +45,7 @@ function drawFittedAura(f,t,x,feet,colors){
   
   const phase=Math.floor(t*20)*Math.PI*2/5;
   ctx.save();
-  for(let y=0;y<height;y+=4){
+  for(let y=0;y<height*(f.key==='chapinha'?.79:1);y+=4){
    const u=y/height;
    const taper=1-Math.pow(u,2.6);
    const ripple=Math.sin(u*30-phase)*.055*Math.sin(u*Math.PI);
@@ -59,6 +59,20 @@ function drawFittedAura(f,t,x,feet,colors){
     const border=Math.round(x+(side<0?-spread:spread-edge));
     rect(border,Math.round(feet+8-y),Math.round(edge),4,colors[1]);
     if(edge>=6&&Math.sin(u*36+phase+side)>0)rect(border+3,Math.round(feet+8-y),3,4,colors[2]);
+   }
+  }
+  if(f.key==='chapinha'){
+   for(let n=-3;n<=3;n++){
+    const offset=n*width*.18;
+    const top=height*(.85+.07*Math.cos(phase+n*1.7));
+    for(let y=height*.60;y<top;y+=4){
+     const u=(y-height*.60)/(top-height*.60);
+     const radius=Math.max(4,Math.round(width*.19*Math.sqrt(1-u*u)/4)*4);
+     const center=x+offset+4*Math.round(Math.sin(y*.055-phase+n));
+     ctx.globalAlpha=opacity*.82;
+     rect(center-radius,feet+8-y,radius*2,4,colors[1]);
+     rect(center-radius+4,feet+8-y,Math.max(0,radius*2-8),4,colors[0]);
+    }
    }
   }
   if(f.key==='paje'){
