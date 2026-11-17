@@ -161,7 +161,7 @@ function drawNeneuDog(dog){
  drawNeneuDogTrail(dog,brutus);
  const size=brutus?3.65:3.45;
  const scale=size*(dog.combo?1.12:1);
- if(!drawDogIntermediate(dog,brutus,scale))drawNeneuFrame('dogs',frame,scale);
+ drawNeneuFrame('dogs',frame,scale);
  ctx.restore();
 }
 
