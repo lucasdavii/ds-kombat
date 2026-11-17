@@ -19,7 +19,12 @@ function loadMusicTrack(scene){
  if(soundtrack.has(scene))return soundtrack.get(scene);
  const track=new Audio();
  const cue=soundtrackCue[scene]??0;
- const entry={track,level:0,starting:false,cued:false};
+ const entry={track,level:0,starting:false,playing:false};
+ track.addEventListener('loadedmetadata',()=>{if(cue)track.currentTime=cue;},{once:true});
+ track.addEventListener('playing',()=>{entry.playing=true;});
+ for(const event of ['pause','waiting','seeking','ended','error']){
+  track.addEventListener(event,()=>{entry.playing=false;});
+ }
  track.preload='auto';
  track.volume=0;
  track.src='assets/music/'+scene+'.ogg';
@@ -39,7 +44,7 @@ function mixSoundtrack(now){
  const scene=screen==='fight'?(ultimateActive?'ultimate':'fight'):
   screen==='results'?'victory':screen==='select'?'select':
   screen==='pause'?null:'menu';
- if(scene)loadMusicTrack(scene);
+ const incoming=scene?loadMusicTrack(scene):null;
  for(const [name,entry] of soundtrack){
   const {track}=entry;
   const selected=name===scene;
@@ -50,12 +55,14 @@ function mixSoundtrack(now){
    entry.starting=true;
    track.play().catch(()=>{}).finally(()=>{entry.starting=false;});
   }
-  const next=wanted&&!track.paused&&track.readyState>=2&&!track.seeking?1:0;
+  const bridging=scene==='select'&&name==='menu'&&soundOn&&!document.hidden&&
+   entry.level>0&&!incoming.playing&&!incoming.track.error;
+  const next=(wanted&&entry.playing)||bridging?1:0;
   const selectionTransition=scene==='select'||name==='select';
   const speed=scene==='ultimate'||name==='ultimate'?3.5:selectionTransition?1/.35:1.25;
   entry.level+=Math.sign(next-entry.level)*Math.min(Math.abs(next-entry.level),dt*speed);
   track.volume=Math.sin(entry.level*Math.PI/2)*Math.min(1,Math.max(0,soundVolume))*.55;
-  if(!wanted&&entry.level===0){
+  if(!wanted&&!bridging&&entry.level===0){
    track.pause();
    if(name==='ultimate'||name==='victory'){
     if(!selected&&screen!=='pause'){soundtrack.delete(name);}
