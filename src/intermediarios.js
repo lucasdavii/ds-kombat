@@ -30,7 +30,7 @@ function intermediateFighterScale(f,variant){
 }
 
 function drawFighterIntermediate(f){
- if(f.grabbedBy||f.grab||visualMode(f))return false;
+ if(f.key==='dino'||f.grabbedBy||f.grab||visualMode(f))return false;
  const key=f.key==='kingbum'?'papateu':f.key;
  const action=f.action;
  const scale=intermediateFighterScale(f,false);
@@ -77,7 +77,7 @@ const intermediateSpecials={
 
 function drawPowerIntermediate(f,scale){
  const move=f.powerMove;
- if(game.roundOver||!move||f.action!==move.pose||move.fired||move.elapsed<move.contact*.36||move.elapsed>=move.contact*.56)return false;
+ if(f.key==='dino'||game.roundOver||!move||f.action!==move.pose||move.fired||move.elapsed<move.contact*.36||move.elapsed>=move.contact*.56)return false;
  const key=f.key==='kingbum'?'papateu':f.key;
  const action=intermediateSpecials[f.key]?.[move.slot]||['especial-1','especial-2','ultimate'][move.slot];
  return drawIntermediateFrame(key+'-poderes',action,0,scale);

@@ -34,8 +34,7 @@ function imageAsset(path){
  }
  return assets[path];
 }
-// Evita carregar fichas e atlas de origem durante a partida.
-for(const path of ASSET_PATHS)if(!path.includes('/reference/')&&!/(?:_arcade|_movimentos|_ultimate_atlas)\.png$/.test(path))imageAsset(path);
+// Cada módulo carrega os atlas que realmente usa; folhas antigas não são requisitadas.
 
 // Cada quadro guarda [x, y, largura, altura, pivô X, pivô Y].
 const pneusonUltimateFrames = {
