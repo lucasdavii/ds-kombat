@@ -1,11 +1,11 @@
 'use strict';
 
 // Sprites do Beiçola: corpo, ataques e vento/som são atlas independentes.
-const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=proportion6');
-const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=proportion6');
-const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=proportion6');
-const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=proportion6');
-const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=proportion6');
+const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=fx7');
+const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=fx7');
+const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=fx7');
+const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=fx7');
+const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=fx7');
 
 function drawBeicolaAtlasFrame(image,index,columns,cell,scale){
  const x=(index%columns)*cell,y=Math.floor(index/columns)*cell;
@@ -90,19 +90,28 @@ function drawBeicolaEffect(f){
  const progress=clamp(move.elapsed/Math.max(.01,move.duration),0,1);
  const col=clamp(Math.floor(progress*6),0,5);
  const row=slot===0?1:slot===1?0:3;
- const enemy=game.f?.[1-f.player];
  const range=f.c.powers[slot]?.range||180;
- const distance=enemy?Math.min(range,Math.max(105,Math.abs(enemy.x-f.x))):range;
- const isUltimate=slot===2;
- const width=clamp(distance*(isUltimate?1.18:1.05),110,isUltimate?820:640);
+ const extent=clamp(move.elapsed/Math.max(.01,move.contact),0,1);
+ const height=slot===2?138:slot===1?104:112;
+ const stamp=slot===2?180:slot===1?104:136;
+ const reach=Math.max(stamp*.55,range*extent);
+ const visibleWidth=Math.min(stamp,reach);
+ const count=Math.max(1,Math.ceil(reach/(stamp*.8)));
  ctx.save();
  ctx.translate(f.x+f.dir*28,f.y-f.c.size*.68);
  ctx.scale(f.dir,1);
- ctx.globalAlpha=.98;
  ctx.imageSmoothingEnabled=false;
- // A camada visual é desenhada separada e não altera o corpo nem as hitboxes.
- const height=clamp(f.c.size*.48,92,128);
- ctx.drawImage(beicolaEffects,col*96,row*96,96,96,0,-height*.56,width,height);
+ for(let i=0;i<count;i++){
+  const x=count===1?0:i*(reach-visibleWidth)/(count-1);
+  ctx.globalAlpha=(slot===2 ? .92 : .86)*(1-.28*i/Math.max(1,count-1));
+  ctx.drawImage(beicolaEffects,col*96,row*96,96,96,x,-height*.56,visibleWidth,height);
+ }
+ if(move.elapsed>=move.contact&&move.elapsed<move.contact+.12){
+  const enemy=game.f?.[1-f.player];
+  const impact=enemy?Math.min(range,Math.abs(enemy.x-f.x)):range;
+  ctx.globalAlpha=.95;
+  ctx.drawImage(beicolaEffects,3*96,2*96,96,96,impact-52,-58,104,104);
+ }
  ctx.restore();
 }
 
