@@ -1,10 +1,11 @@
 'use strict';
 
 // Sprites do Beiçola: corpo, ataques e vento/som são atlas independentes.
-const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png');
-const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png');
-const beicolaResults=imageAsset('assets/fighters/beicola_results.png');
-const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png');
+const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=posefix2');
+const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=posefix2');
+const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=posefix2');
+const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=posefix2');
+const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=posefix2');
 
 function drawBeicolaAtlasFrame(image,index,columns,cell,scale){
  const x=(index%columns)*cell,y=Math.floor(index/columns)*cell;
@@ -24,6 +25,25 @@ function drawBeicola(f,t){
    else if(game.winner===f.player)frame=game.resultTime>1.65?1:4; // pose confiante / punho erguido
    else frame=8;
    drawBeicolaAtlasFrame(beicolaResults,frame,4,96,f.c.size*1.28/96);
+   return true;
+  }
+ }
+ if(beicolaMovement?.naturalWidth){
+  if(f.action==='quickStep'&&f.quickStep){
+   const progress=clamp(f.quickStep.elapsed/Math.max(.001,f.quickStep.duration),0,1);
+   const col=f.backstep?Math.floor((1-progress)*2)%2:clamp(Math.floor(progress*6),0,5);
+   const row=f.backstep?0:1;
+   drawBeicolaAtlasFrame(beicolaMovement,row*6+col,6,96,f.c.size*1.28/96);
+   return true;
+  }
+  if(f.action==='walk'){
+   const col=Math.floor((f.walkClock||0)*8)%2;
+   drawBeicolaAtlasFrame(beicolaMovement,col,6,96,f.c.size*1.28/96);
+   return true;
+  }
+  if(f.action==='run'){
+   const col=2+Math.floor((f.walkClock||0)*10)%4;
+   drawBeicolaAtlasFrame(beicolaMovement,6+col,6,96,f.c.size*1.28/96);
    return true;
   }
  }
