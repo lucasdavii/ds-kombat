@@ -25,8 +25,8 @@ function fighterProfileName(fighter){
 }
 
 let selectedArena;
-const arenaNames=['Mercado','Posto Catatau','Bar do Rubim','Borracharia','Heliponto'];
-const arenaFiles=['mercado','posto','bar','borracharia','heliponto'];
+const arenaNames=['Mercado','Posto Catatau','Bar do Rubim','Borracharia','Heliponto','Quadra de Futsal'];
+const arenaFiles=['mercado','posto','bar','borracharia','heliponto','quadra-futsal'];
 
 function showArenaSelection(){
  if(!selected.every(Boolean))return;
