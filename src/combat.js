@@ -283,6 +283,7 @@ function resolveSpecial(f,slot){
  case 'neneu':summonNeneuDog(f,slot);break;
  case 'paje':resolvePajePower(f,enemy,slot);break;
  case 'kingbum':resolveKingSpecial(f,enemy,slot);break;
+ case 'beicola':resolveBeicolaSpecial(f,enemy,slot);break;
  case 'mucutuba':
   if(slot===0){
    projectile(f,'ancestor',{radius:48,damage:data.damage,speed:480,color:'#75ff51'});
@@ -324,6 +325,7 @@ function resolveUltimate(f){
   }
   break;
  }
+ case 'beicola':resolveBeicolaUltimate(f,enemy);break;
  case 'mucutuba':{
   f.shockVisual=f.c.shockDuration;
   const impact={x:enemy.x,y:enemy.y-enemy.c.size*.53};

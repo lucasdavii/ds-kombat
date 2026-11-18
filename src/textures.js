@@ -304,7 +304,7 @@ const pneusonFrames = {
 
 const pitufoHouse=imageAsset('assets/stages/pitufolandia.png');
 const court=imageAsset('assets/stages/quadra-ceara.png');
-const arcadeSprites=Object.fromEntries(['chapinha','pitufo','gaga','mucutuba'].map(key=>[key,imageAsset(`assets/fighters/${key}_arcade_pixel.png`)]));
+const arcadeSprites=Object.fromEntries(['chapinha','pitufo','gaga','mucutuba','beicola'].map(key=>[key,imageAsset(`assets/fighters/${key}_arcade_pixel.png`)]));
 const dinoAtlas=imageAsset("assets/fighters/dino_arcade_pixel_verde.png");
 
 const powerAtlases=Object.fromEntries(Object.keys(powerFrames).map(key=>[key,imageAsset(`assets/fighters/${key}_powers${key==='dino'?'_verde':''}.png`)]));

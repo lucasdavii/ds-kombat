@@ -77,6 +77,8 @@ function drawFighter(f,t){const current=f.action;let st=current;
   drawPaje(f,t);
  }else if(f.key==='neneu'){
   drawNeneu(f,t);
+ }else if(f.key==='beicola'){
+  drawBeicola(f,t);
  }else if(!game.roundOver&&!visualMode(f)&&drawPowerIntermediate(f,f.c.size/64)){
   // Preparação visual do poder.
  }else if(drawMovementPose(f)){
@@ -117,6 +119,7 @@ function drawFighter(f,t){const current=f.action;let st=current;
   ctx.restore();
  }
  ctx.restore();
+ if(f.key==='beicola')drawBeicolaEffect(f);
  if(f.block){ctx.strokeStyle='#8addff';ctx.lineWidth=6;ctx.globalAlpha=.5+.1*Math.sin(t*14);ctx.beginPath();ctx.ellipse(f.x+f.dir*34,f.y-110,56,100,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}
  if(typeof drawPersistentAura==='function')drawPersistentAura(f,t,true);
 }
