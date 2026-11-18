@@ -1,11 +1,11 @@
 'use strict';
 
 // Sprites do Beiçola: corpo, ataques e vento/som são atlas independentes.
-const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=proportion4');
-const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=proportion4');
-const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=proportion4');
-const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=proportion4');
-const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=proportion4');
+const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=proportion5');
+const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=proportion5');
+const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=proportion5');
+const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=proportion5');
+const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=proportion5');
 
 function drawBeicolaAtlasFrame(image,index,columns,cell,scale){
  const x=(index%columns)*cell,y=Math.floor(index/columns)*cell;
