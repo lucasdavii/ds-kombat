@@ -103,7 +103,7 @@ function drawBeicolaEffect(f){
  ctx.imageSmoothingEnabled=false;
  for(let i=0;i<count;i++){
   const x=count===1?0:i*(reach-visibleWidth)/(count-1);
-  ctx.globalAlpha=(slot===2?.92:.86)*(1-.28*i/Math.max(1,count-1));
+  ctx.globalAlpha=(slot===2 ? .92 : .86)*(1-.28*i/Math.max(1,count-1));
   ctx.drawImage(beicolaEffects,col*96,row*96,96,96,x,-height*.56,visibleWidth,height);
  }
  if(move.elapsed>=move.contact&&move.elapsed<move.contact+.12){
