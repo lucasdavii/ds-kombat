@@ -5,7 +5,7 @@
 function pixelText(text,x,y,size=26,color='#fff',align='left',outline=5){ctx.save();ctx.font=`900 ${size}px Impact, "Arial Black", sans-serif`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.lineJoin='round';ctx.lineWidth=outline;ctx.strokeStyle='#09060d';ctx.strokeText(text,x,y);ctx.fillStyle=color;ctx.fillText(text,x,y);ctx.restore();}
 function rect(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(x,y,w,h);}
 function poly(pts,color){ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(...pts[0]);for(let i=1;i<pts.length;i++)ctx.lineTo(...pts[i]);ctx.closePath();ctx.fill();}
-const pixelStages=["mercado","posto","bar","borracharia","heliponto"].map(name=>imageAsset('assets/stages/'+name+'.webp'));
+const pixelStages=["mercado","posto","bar","borracharia","heliponto","quadra-futsal"].map(name=>imageAsset('assets/stages/'+name+'.webp'));
 function renderBackdrop(t){
  const stage=pixelStages[game?.stageIndex];
  if(stage?.naturalWidth){
