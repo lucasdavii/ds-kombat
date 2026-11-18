@@ -1,11 +1,11 @@
 'use strict';
 
 // Sprites do Beiçola: corpo, ataques e vento/som são atlas independentes.
-const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=proportion3');
-const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=proportion3');
-const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=proportion3');
-const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=proportion3');
-const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=proportion3');
+const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=proportion4');
+const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=proportion4');
+const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=proportion4');
+const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=proportion4');
+const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=proportion4');
 
 function drawBeicolaAtlasFrame(image,index,columns,cell,scale){
  const x=(index%columns)*cell,y=Math.floor(index/columns)*cell;
@@ -51,9 +51,13 @@ function drawBeicola(f,t){
   const move=f.powerMove;
   const slot=move?.slot??(f.action==='ultimate'?2:0);
   const progress=move?clamp(move.elapsed/Math.max(.01,move.duration),0,1):0;
-  const col=clamp(Math.floor(progress*6),0,5);
+  const eased=progress*progress*(3-2*progress);
+  const col=clamp(Math.floor(eased*6),0,5);
   const row=f.action==='ultimate'?2:slot===1?1:0;
+  ctx.save();
+  ctx.translate(f.dir*3*Math.sin(progress*Math.PI),-2*Math.sin(progress*Math.PI*2));
   drawBeicolaAtlasFrame(beicolaSpecials,row*6+col,6,96,f.c.size*1.28/96);
+  ctx.restore();
   return true;
  }
  if(f.action==='attack'&&beicolaAttacks.naturalWidth){
@@ -89,7 +93,8 @@ function drawBeicolaEffect(f){
  const enemy=game.f?.[1-f.player];
  const range=f.c.powers[slot]?.range||180;
  const distance=enemy?Math.min(range,Math.max(105,Math.abs(enemy.x-f.x))):range;
- const width=clamp(distance*1.05,110,640);
+ const isUltimate=slot===2;
+ const width=clamp(distance*(isUltimate?1.18:1.05),110,isUltimate?820:640);
  ctx.save();
  ctx.translate(f.x+f.dir*28,f.y-f.c.size*.68);
  ctx.scale(f.dir,1);
