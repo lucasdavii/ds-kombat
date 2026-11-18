@@ -10,7 +10,7 @@
   pneuson: {role:'Tanque de projéteis', hp:145, speed:232, cooldowns:[198,312]},
   mucutuba: {role:'Alcance e cura', hp:108, speed:333, cooldowns:[198,720]},
   kingbum: {role:'Tanque de pressão', hp:139, speed:241, cooldowns:[228,840]},
-  paje: {role:'Velocidade', hp:100, speed:372, atk:1.17, cooldowns:[195,312]},
+  paje: {role:'Velocidade', hp:88, speed:372, atk:1.17, cooldowns:[195,312]},
   neneu: {role:'Invocação', hp:116, speed:296, cooldowns:[216,276]}
  };
  for(const [key,{cooldowns,...stats}] of Object.entries(balance)){
