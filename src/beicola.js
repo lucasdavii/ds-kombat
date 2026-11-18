@@ -1,11 +1,11 @@
 'use strict';
 
 // Sprites do Beiçola: corpo, ataques e vento/som são atlas independentes.
-const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=posefix2');
-const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=posefix2');
-const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=posefix2');
-const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=posefix2');
-const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=posefix2');
+const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=proportion3');
+const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=proportion3');
+const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=proportion3');
+const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=proportion3');
+const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=proportion3');
 
 function drawBeicolaAtlasFrame(image,index,columns,cell,scale){
  const x=(index%columns)*cell,y=Math.floor(index/columns)*cell;
@@ -66,6 +66,9 @@ function drawBeicola(f,t){
   return true;
  }
  let frame=arcadePose(f,t);
+ // Guarda alta protege o rosto; a baixa agacha e fecha a linha inferior.
+ if(f.action==='guard'||f.action==='blockstun')frame=f.lowGuard?6:5;
+ else if(f.action==='crouch')frame=3;
  if(f.action==='special')frame=16;
  if(f.action==='ultimate')frame=17;
  if(f.action==='hit'||f.action==='grabbed')frame=12;
@@ -90,10 +93,11 @@ function drawBeicolaEffect(f){
  ctx.save();
  ctx.translate(f.x+f.dir*28,f.y-f.c.size*.68);
  ctx.scale(f.dir,1);
- ctx.globalAlpha=.86;
+ ctx.globalAlpha=.98;
  ctx.imageSmoothingEnabled=false;
  // A camada visual é desenhada separada e não altera o corpo nem as hitboxes.
- ctx.drawImage(beicolaEffects,col*96,row*96,96,96,0,-32,width,64);
+ const height=clamp(f.c.size*.48,92,128);
+ ctx.drawImage(beicolaEffects,col*96,row*96,96,96,0,-height*.56,width,height);
  ctx.restore();
 }
 
