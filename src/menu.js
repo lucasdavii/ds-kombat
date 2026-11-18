@@ -156,8 +156,10 @@ function showHelp(){if(mobileMode){screen='help';showModal('<h2>COMO JOGAR</h2><
 function showMoves(k){const c=FIGHTERS[k];$('moveInfo').innerHTML=`<div class="move-title" style="color:${c.accent}">${c.name}</div><div class="move-entry"><b>ESPECIAL 1 • R / U / LB</b><span>${c.specials[0][0]} — ${c.specials[0][1]} (${specialCost(c,0)} de energia)</span></div><div class="move-entry"><b>ESPECIAL 2 • T / I / RB</b><span>${c.specials[1][0]} — ${c.specials[1][1]} (${specialCost(c,1)} de energia)</span></div><div class="move-entry"><b>ULTIMATE • Y / O / LT</b><span>${c.ultimate} — requer 100% de energia.</span></div><div class="move-entry"><b>DEFESA • H / L / RT</b><span>Segure para bloquear no chão. Defender no instante do impacto recupera energia.</span></div><div class="move-entry"><b>MOVIMENTO RÁPIDO</b><span>Dois toques para frente ou para trás. Segure para trás ao levantar para recuar.</span></div><div class="move-entry"><b>AGARRÃO • SOCO + CHUTE</b><span>Aperte juntos perto do rival.</span></div><div class="move-entry"><b>ESCAPE • DEFESA + SOCO</b><span>Interrompe um combo uma vez por round.</span></div>`;}
 modal.addEventListener('change',e=>{if(e.target.id==='difficulty')difficulty=e.target.value;});
 modal.addEventListener('click',e=>{unlockAudio();const char=e.target.closest('[data-char]');if(char){pickChar(char.dataset.char);return;}const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;
- if(/^arena-(?:[0-4]|random)$/.test(action)&&selected.every(Boolean)){
-  selectedArena=action==='arena-random'?Math.floor(Math.random()*arenaNames.length):Number(action.slice(6));
+ if(/^arena-(?:[0-9]+|random)$/.test(action)&&selected.every(Boolean)){
+  const choice=action==='arena-random'?Math.floor(Math.random()*arenaNames.length):Number(action.slice(6));
+  if(choice<0||choice>=arenaNames.length)return;
+  selectedArena=choice;
   startMatch();return;
  }
  switch(action){case 'fighters':showSelection();break;case 'solo':selectMode('solo');break;case 'local':selectMode('local');break;case 'help':showHelp();break;case 'training':window.location.href='?treino';break;case 'menu':showHome();$('pausedOverlay').classList.add('hidden');break;case 'slot-0':case 'slot-1':selectFocus=Number(button.dataset.action.at(-1));showSelection();break;case 'random':randomPick();break;case 'start':showArenaSelection();break;case 'rematch':startMatch();break;case 'newSelection':selectMode(mode);break;}});
