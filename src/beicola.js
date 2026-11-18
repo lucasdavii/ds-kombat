@@ -1,11 +1,11 @@
 'use strict';
 
 // Sprites do Beiçola: corpo, ataques e vento/som são atlas independentes.
-const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=fx7');
-const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=fx7');
-const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=fx7');
-const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=fx7');
-const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=fx7');
+const beicolaAttacks=imageAsset('assets/fighters/beicola_attacks.png?v=fx8');
+const beicolaMovement=imageAsset('assets/fighters/beicola_movement.png?v=fx8');
+const beicolaSpecials=imageAsset('assets/fighters/beicola_specials.png?v=fx8');
+const beicolaResults=imageAsset('assets/fighters/beicola_results.png?v=fx8');
+const beicolaEffects=imageAsset('assets/fighters/beicola_fx.png?v=fx8');
 
 function drawBeicolaAtlasFrame(image,index,columns,cell,scale){
  const x=(index%columns)*cell,y=Math.floor(index/columns)*cell;
@@ -94,17 +94,19 @@ function drawBeicolaEffect(f){
  const extent=clamp(move.elapsed/Math.max(.01,move.contact),0,1);
  const height=slot===2?138:slot===1?104:112;
  const stamp=slot===2?180:slot===1?104:136;
- const reach=Math.max(stamp*.55,range*extent);
- const visibleWidth=Math.min(stamp,reach);
- const count=Math.max(1,Math.ceil(reach/(stamp*.8)));
+ const wavefront=range*extent;
+ const count=Math.max(2,Math.ceil(range/(stamp*.72)));
+ const lastX=Math.max(0,range-stamp);
  ctx.save();
  ctx.translate(f.x+f.dir*28,f.y-f.c.size*.68);
  ctx.scale(f.dir,1);
  ctx.imageSmoothingEnabled=false;
  for(let i=0;i<count;i++){
-  const x=count===1?0:i*(reach-visibleWidth)/(count-1);
-  ctx.globalAlpha=(slot===2 ? .92 : .86)*(1-.28*i/Math.max(1,count-1));
-  ctx.drawImage(beicolaEffects,col*96,row*96,96,96,x,-height*.56,visibleWidth,height);
+  const x=i*lastX/(count-1);
+  const arriving=clamp((wavefront-x)/stamp,0,1);
+  if(arriving<=0)continue;
+  ctx.globalAlpha=(slot===2 ? .92 : .86)*(1-.28*i/(count-1))*arriving;
+  ctx.drawImage(beicolaEffects,col*96,row*96,96,96,x,-height*.56,stamp,height);
  }
  if(move.elapsed>=move.contact&&move.elapsed<move.contact+.12){
   const enemy=game.f?.[1-f.player];

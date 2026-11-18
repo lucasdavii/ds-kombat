@@ -11,8 +11,8 @@ FIGHTERS.beicola={
   kick:{...COMBAT.kick,startup:13,range:148,damage:11},
  },
  powers:[
-  {startup:12,duration:36,damage:10,range:360,knock:44,cooldown:240},
-  {startup:16,duration:42,damage:12,range:420,knock:32,cooldown:300},
+  {startup:9,duration:30,damage:10,range:360,knock:44,cooldown:240},
+  {startup:12,duration:34,damage:12,range:420,knock:32,cooldown:300},
   {startup:20,duration:60,damage:30,range:880,knock:105,meterCost:100,invulnerability:0},
  ],
 };
